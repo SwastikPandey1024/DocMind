@@ -20,9 +20,14 @@ class Document(TimestampMixin, SoftDeleteMixin, Base):
     )
     file_name: Mapped[str] = mapped_column(String(500), nullable=False)
     file_path: Mapped[str] = mapped_column(String(1000), nullable=False)
-    status: Mapped[str] = mapped_column(String(50), default="uploaded", nullable=False, index=True)
+    status: Mapped[str] = mapped_column(String(50), default="UPLOADING", nullable=False, index=True)
     total_pages: Mapped[int | None] = mapped_column(Integer, nullable=True)
     mime_type: Mapped[str | None] = mapped_column(String(100), nullable=True)
+
+    # Production metadata for upload de-duplication and validation.
+    checksum_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)
+    file_size: Mapped[int | None] = mapped_column(Integer, nullable=True)
+
 
     user = relationship("User", back_populates="documents")
     ocr_texts = relationship("OCRText", back_populates="document", cascade="all, delete")

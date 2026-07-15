@@ -8,7 +8,8 @@ from pydantic import BaseModel, Field
 class DocumentUploadResponse(BaseModel):
     document_id: UUID
     filename: str
-    status: str = "Uploaded"
+    status: str = "READY"
+
 
 
 class DocumentListItem(BaseModel):
