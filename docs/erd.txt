@@ -1,0 +1,11 @@
+User
+  ├── Documents (1:N)
+  └── ChatHistory (1:N)
+
+Document
+  ├── OCRText (1:N)
+  ├── Chunks (1:N)
+  └── ChatHistory (1:N)
+
+Chunk
+  └── EmbeddingMetadata (1:1)
