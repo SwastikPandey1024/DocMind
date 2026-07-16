@@ -1,0 +1,62 @@
+# Backend Dockerfile (multi-stage)
+FROM python:3.12-slim as builder
+
+WORKDIR /build
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libpq-dev \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements
+COPY backend/requirements.txt .
+
+# Build wheels
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
+    pip wheel --no-cache-dir --no-deps --wheel-dir /build/wheels -r requirements.txt
+
+# ============================================
+
+FROM python:3.12-slim
+
+WORKDIR /app
+
+# Install runtime dependencies only
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq5 \
+    curl \
+    netcat-traditional \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy wheels from builder
+COPY --from=builder /build/wheels /wheels
+
+# Install wheels
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir --no-index --find-links=/wheels /wheels/* && \
+    rm -rf /wheels
+
+# Copy application
+COPY backend /app
+
+# Copy startup script
+COPY backend/startup.sh /app/startup.sh
+RUN chmod +x /app/startup.sh
+
+# Create non-root user
+RUN useradd -m -u 1000 appuser && \
+    mkdir -p /app/storage/uploads /app/storage/logs && \
+    chown -R appuser:appuser /app
+
+USER appuser
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+EXPOSE 8000
+
+# Startup
+CMD ["/app/startup.sh"]

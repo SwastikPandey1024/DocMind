@@ -1,0 +1,81 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - /mnt/data/postgres:/var/lib/postgresql/data
+    networks:
+      - docmind
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    image: docmind-backend:latest
+    restart: always
+    environment:
+      APP_ENV: production
+      DEBUG: false
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      JWT_SECRET: ${JWT_SECRET}
+      UPLOAD_DIR: /app/storage/uploads
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      OLLAMA_HOST: ${OLLAMA_HOST}
+    volumes:
+      - /mnt/data/uploads:/app/storage/uploads
+      - /mnt/data/logs:/app/storage/logs
+    networks:
+      - docmind
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  frontend:
+    image: docmind-frontend:latest
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      VITE_API_BASE_URL: ${VITE_API_BASE_URL}
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    networks:
+      - docmind
+    depends_on:
+      - backend
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  ollama:
+    image: ollama/ollama:latest
+    restart: always
+    environment:
+      OLLAMA_HOST: 0.0.0.0:11434
+    volumes:
+      - /mnt/data/ollama:/root/.ollama
+    networks:
+      - docmind
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+networks:
+  docmind:
+    driver: bridge

@@ -15,15 +15,28 @@ class Settings(BaseSettings):
         validation_alias="APP_ENV",
     )
     debug: bool = Field(default=False, validation_alias="DEBUG")
-    database_url: str = Field(default="postgresql+psycopg2://postgres:postgres@localhost:5432/docmind", validation_alias="DATABASE_URL")
+    database_url: str = Field(
+        default="postgresql+psycopg2://postgres:postgres@postgres:5432/docmind",
+        validation_alias="DATABASE_URL"
+    )
     jwt_secret: str = Field(default="change-me-in-production", validation_alias="JWT_SECRET")
     jwt_algorithm: str = Field(default="HS256", validation_alias="JWT_ALGORITHM")
     access_token_expire_minutes: int = Field(default=15, validation_alias="ACCESS_TOKEN_EXPIRE_MINUTES")
     refresh_token_expire_days: int = Field(default=7, validation_alias="REFRESH_TOKEN_EXPIRE_DAYS")
-    upload_dir: str = Field(default="./storage/uploads", validation_alias="UPLOAD_DIR")
+    upload_dir: str = Field(default="/app/storage/uploads", validation_alias="UPLOAD_DIR")
     log_level: str = Field(default="INFO", validation_alias="LOG_LEVEL")
+    
+    # AI/ML Services
     openai_api_key: str | None = Field(default=None, validation_alias="OPENAI_API_KEY")
-    ollama_host: str = Field(default="http://localhost:11434", validation_alias="OLLAMA_HOST")
+    ollama_base_url: str = Field(default="http://ollama:11434", validation_alias="OLLAMA_BASE_URL")
+    ollama_model: str = Field(default="llama2", validation_alias="OLLAMA_MODEL")
+    embedding_model: str = Field(default="bge-small", validation_alias="EMBEDDING_MODEL")
+    ocr_language: str = Field(default="en", validation_alias="OCR_LANGUAGE")
+    
+    # Storage and limits
+    max_upload_size_mb: int = Field(default=50, validation_alias="MAX_UPLOAD_SIZE_MB")
+    storage_path: str = Field(default="/app/storage", validation_alias="STORAGE_PATH")
+    vectorstore_path: str = Field(default="/app/storage/vectorstore", validation_alias="VECTORSTORE_PATH")
 
     model_config = SettingsConfigDict(
         env_file=".env",
