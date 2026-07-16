@@ -116,7 +116,7 @@ function AppContent() {
   return <AppRoutes />;
 }
 
-export function App() {
+export default function App() {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>

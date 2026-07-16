@@ -2,8 +2,8 @@
 
 import logging
 import time
-from typing import AsyncGenerator
 import uuid
+from typing import AsyncGenerator, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import StreamingResponse
@@ -21,36 +21,40 @@ from app.api.v1.schemas.common import ApiResponse
 from app.auth.dependencies import get_db_session
 from app.models.chat import ChatHistory
 from app.models.document import Document
+from app.services.chat_service import ChatService
 from app.services.llm_service import LLMService
-from app.services.rag_service import RAGService
+from app.services.embedding_service import EmbeddingService
+from app.services.rag_memory_store import RAGMemoryStore
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
-
 # Placeholder services (will be injected from main.py)
-_rag_service: RAGService | None = None
-_llm_service: LLMService | None = None
+_rag_memory_store: Optional[RAGMemoryStore] = None
+_llm_service: Optional[LLMService] = None
+_embedding_service: Optional[EmbeddingService] = None
+_chat_service: Optional[ChatService] = None
 
 
-def set_services(rag_service: RAGService, llm_service: LLMService):
-    """Register RAG and LLM services (called from main.py)."""
-    global _rag_service, _llm_service
-    _rag_service = rag_service
+def set_services(
+    rag_memory_store: RAGMemoryStore,
+    llm_service: LLMService,
+    embedding_service: EmbeddingService,
+    chat_service: ChatService,
+):
+    """Register services (called from main.py)."""
+    global _rag_memory_store, _llm_service, _embedding_service, _chat_service
+    _rag_memory_store = rag_memory_store
     _llm_service = llm_service
+    _embedding_service = embedding_service
+    _chat_service = chat_service
 
 
-def get_rag_service() -> RAGService:
-    if _rag_service is None:
-        raise HTTPException(status_code=503, detail="RAG service not initialized")
-    return _rag_service
-
-
-def get_llm_service() -> LLMService:
-    if _llm_service is None:
-        raise HTTPException(status_code=503, detail="LLM service not initialized")
-    return _llm_service
+def get_chat_service() -> ChatService:
+    if _chat_service is None:
+        raise HTTPException(status_code=503, detail="Chat service not initialized")
+    return _chat_service
 
 
 @router.post("", response_model=ApiResponse[ChatResponse])
@@ -58,84 +62,63 @@ async def chat_with_document(
     request: ChatRequest,
     current_user=Depends(get_current_user),
     db: Session = Depends(get_db_session),
-    rag_service: RAGService = Depends(get_rag_service),
-    llm_service: LLMService = Depends(get_llm_service),
+    chat_service: ChatService = Depends(get_chat_service),
 ) -> ApiResponse[ChatResponse]:
     """Chat with a document using RAG."""
     start_time = time.time()
-    
+
     try:
         # Verify document ownership
         doc = db.query(Document).filter_by(
             document_id=request.document_id,
             user_id=current_user.user_id,
         ).first()
-        
+
         if not doc:
             raise HTTPException(status_code=404, detail="Document not found")
-        
+
+        if doc.status != "READY":
+            raise HTTPException(
+                status_code=400,
+                detail=f"Document is still processing. Status: {doc.status}",
+            )
+
         logger.info(f"Chat query on document {doc.document_id}: {request.question[:100]}")
-        
-        # Retrieve relevant chunks via RAG
-        retrieval_results = rag_service.retrieve(
-            query=request.question,
-            k=5,
-            score_threshold=0.3,
+
+        # Get response from chat service
+        response_data = await chat_service.chat(
+            document_id=str(request.document_id),
+            question=request.question,
+            temperature=request.temperature,
+            include_sources=request.include_sources,
         )
-        
-        if not retrieval_results:
-            logger.warning(f"No relevant chunks found for query: {request.question[:100]}")
-            answer = "I could not find relevant information in the document to answer your question."
-            citations = []
-        else:
-            # Build context and extract citations
-            context, citations = rag_service.build_rag_context_and_citations(retrieval_results)
-            
-            # Build prompt
-            system_prompt = (
-                "You are a helpful assistant that answers questions based on provided documents. "
-                "Be concise and accurate. If you don't know something, say so. "
-                "Provide citations when referencing specific parts of the document."
-            )
-            
-            user_prompt = f"""Based on the following document context, answer the user's question.
 
-Document Context:
-{context}
-
-User Question: {request.question}
-
-Answer:"""
-            
-            # Generate response
-            answer = await llm_service.generate(
-                prompt=user_prompt,
-                system_prompt=system_prompt,
-                temperature=request.temperature,
-            )
-        
         response_time_ms = int((time.time() - start_time) * 1000)
-        
+
         # Save to chat history
         chat_record = ChatHistory(
             user_id=current_user.user_id,
             document_id=request.document_id,
             question=request.question,
-            answer=answer,
+            answer=response_data["answer"],
             response_time_ms=response_time_ms,
         )
         db.add(chat_record)
         db.commit()
-        
+
+        # Build response
+        chat_response = ChatResponse(
+            answer=response_data["answer"],
+            citations=response_data["citations"],
+            response_time_ms=response_time_ms,
+            model=response_data["model"],
+        )
+
         return ApiResponse(
             message="Chat response generated successfully",
-            data=ChatResponse(
-                answer=answer,
-                citations=citations if request.include_sources else [],
-                response_time_ms=response_time_ms,
-            ),
+            data=chat_response,
         )
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -148,11 +131,10 @@ async def chat_stream(
     request: ChatRequest,
     current_user=Depends(get_current_user),
     db: Session = Depends(get_db_session),
-    rag_service: RAGService = Depends(get_rag_service),
-    llm_service: LLMService = Depends(get_llm_service),
+    chat_service: ChatService = Depends(get_chat_service),
 ) -> StreamingResponse:
     """Stream chat responses."""
-    
+
     async def generate_stream() -> AsyncGenerator[str, None]:
         try:
             # Verify document ownership
@@ -160,61 +142,42 @@ async def chat_stream(
                 document_id=request.document_id,
                 user_id=current_user.user_id,
             ).first()
-            
+
             if not doc:
                 error = ChatStreamChunk(chunk="Error: Document not found", is_final=True)
                 yield f"data: {error.model_dump_json()}\n\n"
                 return
-            
-            # Retrieve chunks
-            retrieval_results = rag_service.retrieve(
-                query=request.question,
-                k=5,
-                score_threshold=0.3,
-            )
-            
-            # Extract citations from first result
-            citations = None
-            if retrieval_results and request.include_sources:
-                _, citations = rag_service.build_rag_context_and_citations(retrieval_results)
-            
-            # Build context
-            context = rag_service.build_context(retrieval_results) if retrieval_results else ""
-            
-            # Build prompt
-            system_prompt = (
-                "You are a helpful assistant that answers questions based on provided documents. "
-                "Be concise and accurate."
-            )
-            
-            user_prompt = f"""Based on the following context, answer the user's question.
 
-Context:
-{context}
+            if doc.status != "READY":
+                error = ChatStreamChunk(
+                    chunk=f"Document is still processing. Status: {doc.status}",
+                    is_final=True,
+                )
+                yield f"data: {error.model_dump_json()}\n\n"
+                return
 
-Question: {request.question}
-
-Answer:"""
-            
-            # Stream generation
             collected_answer = ""
-            async for chunk in llm_service.stream(
-                prompt=user_prompt,
-                system_prompt=system_prompt,
+            collected_citations = []
+
+            # Stream chat
+            async for chunk_data in chat_service.chat_stream(
+                document_id=str(request.document_id),
+                question=request.question,
                 temperature=request.temperature,
+                include_sources=request.include_sources,
             ):
-                collected_answer += chunk
-                stream_chunk = ChatStreamChunk(chunk=chunk)
-                yield f"data: {stream_chunk.model_dump_json()}\n\n"
-            
-            # Final chunk with citations
-            final_chunk = ChatStreamChunk(
-                chunk="",
-                is_final=True,
-                citations=citations,
-            )
-            yield f"data: {final_chunk.model_dump_json()}\n\n"
-            
+                if chunk_data.get("is_final"):
+                    collected_citations = chunk_data.get("citations", [])
+                else:
+                    collected_answer += chunk_data.get("chunk", "")
+
+                chunk = ChatStreamChunk(
+                    chunk=chunk_data.get("chunk", ""),
+                    is_final=chunk_data.get("is_final", False),
+                    citations=chunk_data.get("citations"),
+                )
+                yield f"data: {chunk.model_dump_json()}\n\n"
+
             # Save to history
             chat_record = ChatHistory(
                 user_id=current_user.user_id,
@@ -224,12 +187,12 @@ Answer:"""
             )
             db.add(chat_record)
             db.commit()
-            
+
         except Exception as e:
             logger.exception(f"Stream error: {e}")
             error = ChatStreamChunk(chunk=f"Error: {str(e)}", is_final=True)
             yield f"data: {error.model_dump_json()}\n\n"
-    
+
     return StreamingResponse(generate_stream(), media_type="text/event-stream")
 
 
@@ -242,25 +205,25 @@ def get_chat_history(
     limit: int = 50,
 ) -> ApiResponse[ChatHistoryResponse]:
     """Get chat history for a document."""
-    
+
     # Verify document ownership
     doc = db.query(Document).filter_by(
         document_id=document_id,
         user_id=current_user.user_id,
     ).first()
-    
+
     if not doc:
         raise HTTPException(status_code=404, detail="Document not found")
-    
+
     # Get history
     query = db.query(ChatHistory).filter_by(
         user_id=current_user.user_id,
         document_id=document_id,
     ).order_by(ChatHistory.created_at.desc())
-    
+
     total = query.count()
     items = query.offset(offset).limit(limit).all()
-    
+
     history_items = [
         ChatHistoryItem(
             chat_id=item.chat_id,
@@ -272,7 +235,7 @@ def get_chat_history(
         )
         for item in items
     ]
-    
+
     return ApiResponse(
         message="Chat history retrieved successfully",
         data=ChatHistoryResponse(items=history_items, total=total),

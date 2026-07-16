@@ -1,3 +1,5 @@
+"""Document service with OCR pipeline integration."""
+
 from __future__ import annotations
 
 import hashlib
@@ -12,6 +14,7 @@ from app.models.document import Document
 from app.repositories.document import DocumentRepository
 from app.services.document_validator import DocumentValidator
 from app.services.storage_service import StorageService
+from app.services.ocr_pipeline import start_ocr_processing
 
 logger = logging.getLogger("docmind")
 
@@ -36,9 +39,7 @@ class DocumentService:
         self.validator = validator
 
     def upload_pdf(self, *, user_id: uuid.UUID, file: UploadFile) -> Document:
-        # Note: UploadFile exposes .file which is seekable in many servers, but not guaranteed.
-        # We'll fully read into memory for checksum only if needed; here we stream but hash first
-        # and then reset by reading again from buffered bytes.
+        """Upload PDF and trigger OCR pipeline."""
 
         if file.content_type is None and not file.filename:
             raise HTTPException(status_code=422, detail="Invalid upload.")
@@ -49,7 +50,7 @@ class DocumentService:
             if size_bytes == 0:
                 raise ValueError("Uploaded file is empty.")
 
-            # Validate.
+            # Validate
             meta = self.validator.validate_pdf(
                 filename=file.filename or "upload.pdf",
                 content_type=file.content_type,
@@ -63,22 +64,20 @@ class DocumentService:
                 checksum_sha256=checksum_sha256,
             )
 
-            # Duplicate detection.
+            # Duplicate detection
             existing = self.document_repository.get_by_user_and_checksum(
                 user_id=user_id, checksum=meta_all.checksum_sha256
             )
             if existing is not None:
                 logger.info(
                     "document.upload.duplicate",
-                    extra={"user_id": str(user_id), "document_id": str(existing.document_id), "checksum": meta_all.checksum_sha256},
+                    extra={"user_id": str(user_id), "document_id": str(existing.document_id)},
                 )
-                # Return existing document instead of 409 to be idempotent.
                 return existing
 
             document_id = uuid.uuid4()
-            stored_doc_dir, _ = None, None
 
-            # Save file.
+            # Save file
             from io import BytesIO
 
             dest_path, _mime_type = self.storage_service.save_upload(
@@ -89,13 +88,14 @@ class DocumentService:
                 mime_type=meta_all.mime_type,
             )
 
+            # Create document record with PROCESSING status
             doc = self.document_repository.create(
                 obj_in={
                     "document_id": document_id,
                     "user_id": user_id,
                     "file_name": file.filename or f"{document_id}.pdf",
                     "file_path": str(dest_path),
-                    "status": "READY",
+                    "status": "PROCESSING",  # Will be updated by OCR pipeline
                     "total_pages": None,
                     "mime_type": meta_all.mime_type,
                     "file_size": meta_all.size_bytes,
@@ -105,8 +105,17 @@ class DocumentService:
 
             logger.info(
                 "document.upload.success",
-                extra={"user_id": str(user_id), "document_id": str(doc.document_id), "checksum": meta_all.checksum_sha256},
+                extra={"user_id": str(user_id), "document_id": str(doc.document_id)},
             )
+
+            # Trigger OCR processing in background
+            try:
+                start_ocr_processing(document_id)
+                logger.info(f"OCR processing started: {document_id}")
+            except Exception as e:
+                logger.error(f"Failed to start OCR processing: {e}")
+                # Continue anyway - user can retry
+
             return doc
 
         except ValueError as exc:
@@ -125,19 +134,21 @@ class DocumentService:
             raise HTTPException(status_code=500, detail="Failed to upload document.") from exc
 
     def list_user_documents(self, *, user_id: uuid.UUID, offset: int = 0, limit: int = 100) -> list[Document]:
+        """List user's documents."""
         return self.document_repository.list_by_user(user_id=user_id, offset=offset, limit=limit)
 
     def get_user_document(self, *, user_id: uuid.UUID, document_id: uuid.UUID) -> Document:
+        """Get single document."""
         doc = self.document_repository.get_by_user_and_id(user_id=user_id, document_id=document_id)
         if doc is None:
             raise HTTPException(status_code=404, detail="Document not found.")
         return doc
 
     def delete_user_document(self, *, user_id: uuid.UUID, document_id: uuid.UUID) -> None:
+        """Delete document (soft delete)."""
         doc = self.get_user_document(user_id=user_id, document_id=document_id)
         self.document_repository.delete(db_obj=doc)
         logger.info(
             "document.delete.soft",
             extra={"user_id": str(user_id), "document_id": str(doc.document_id)},
         )
-
