@@ -1,11 +1,11 @@
-"""Chat routes for RAG-based document Q&A."""
+"""Chat routes with lazy AI service initialization."""
 
 import logging
 import time
 import uuid
 from typing import AsyncGenerator, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
@@ -19,42 +19,67 @@ from app.api.v1.schemas.chat import (
 )
 from app.api.v1.schemas.common import ApiResponse
 from app.auth.dependencies import get_db_session
+from app.core.config import get_settings
 from app.models.chat import ChatHistory
 from app.models.document import Document
-from app.services.chat_service import ChatService
-from app.services.llm_service import LLMService
 from app.services.embedding_service import EmbeddingService
+from app.services.llm_service import LLMService, OllamaProvider
 from app.services.rag_memory_store import RAGMemoryStore
+from app.services.chat_service import ChatService
 
 logger = logging.getLogger(__name__)
-
 router = APIRouter(prefix="/chat", tags=["chat"])
-
-# Placeholder services (will be injected from main.py)
-_rag_memory_store: Optional[RAGMemoryStore] = None
-_llm_service: Optional[LLMService] = None
-_embedding_service: Optional[EmbeddingService] = None
-_chat_service: Optional[ChatService] = None
+settings = get_settings()
 
 
-def set_services(
-    rag_memory_store: RAGMemoryStore,
-    llm_service: LLMService,
-    embedding_service: EmbeddingService,
-    chat_service: ChatService,
-):
-    """Register services (called from main.py)."""
-    global _rag_memory_store, _llm_service, _embedding_service, _chat_service
-    _rag_memory_store = rag_memory_store
-    _llm_service = llm_service
-    _embedding_service = embedding_service
-    _chat_service = chat_service
+async def get_chat_service(request: Request) -> ChatService:
+    """Get or initialize chat service lazily."""
+    if not request.app.state.services_initialized:
+        try:
+            logger.info("Lazy-initializing AI services...")
 
+            # Initialize embedding service
+            embedding_service = EmbeddingService(
+                model_name=settings.embedding_model,
+                device="cpu",
+            )
+            logger.info(f"✓ Embedding service ready: {settings.embedding_model}")
 
-def get_chat_service() -> ChatService:
-    if _chat_service is None:
-        raise HTTPException(status_code=503, detail="Chat service not initialized")
-    return _chat_service
+            # Initialize RAG memory store
+            rag_memory_store = RAGMemoryStore(embedding_service)
+            logger.info("✓ RAG memory store ready")
+
+            # Initialize LLM service
+            llm_provider = OllamaProvider(
+                base_url=settings.ollama_base_url,
+                model=settings.ollama_model,
+            )
+            llm_service = LLMService(primary_provider=llm_provider)
+            logger.info(f"✓ LLM service ready: {settings.ollama_model}")
+
+            # Initialize chat service
+            chat_service = ChatService(
+                rag_memory_store=rag_memory_store,
+                llm_service=llm_service,
+                embedding_service=embedding_service,
+            )
+            logger.info("✓ Chat service ready")
+
+            # Store in app state
+            request.app.state.embedding_service = embedding_service
+            request.app.state.rag_memory_store = rag_memory_store
+            request.app.state.llm_service = llm_service
+            request.app.state.chat_service = chat_service
+            request.app.state.services_initialized = True
+
+        except Exception as e:
+            logger.error(f"Failed to initialize AI services: {e}")
+            raise HTTPException(
+                status_code=503,
+                detail="AI services not available. Please try again later.",
+            )
+
+    return request.app.state.chat_service
 
 
 @router.post("", response_model=ApiResponse[ChatResponse])
@@ -83,7 +108,7 @@ async def chat_with_document(
                 detail=f"Document is still processing. Status: {doc.status}",
             )
 
-        logger.info(f"Chat query on document {doc.document_id}: {request.question[:100]}")
+        logger.info(f"Chat query: {request.question[:100]}")
 
         # Get response from chat service
         response_data = await chat_service.chat(
@@ -106,17 +131,14 @@ async def chat_with_document(
         db.add(chat_record)
         db.commit()
 
-        # Build response
-        chat_response = ChatResponse(
-            answer=response_data["answer"],
-            citations=response_data["citations"],
-            response_time_ms=response_time_ms,
-            model=response_data["model"],
-        )
-
         return ApiResponse(
             message="Chat response generated successfully",
-            data=chat_response,
+            data=ChatResponse(
+                answer=response_data["answer"],
+                citations=response_data["citations"],
+                response_time_ms=response_time_ms,
+                model=response_data["model"],
+            ),
         )
 
     except HTTPException:
@@ -240,3 +262,8 @@ def get_chat_history(
         message="Chat history retrieved successfully",
         data=ChatHistoryResponse(items=history_items, total=total),
     )
+
+
+def set_services(*args, **kwargs):
+    """Deprecated: Services are now lazy-initialized."""
+    pass

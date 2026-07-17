@@ -9,7 +9,7 @@ from typing import Optional
 import cv2
 import fitz
 import numpy as np
-from paddleocr import PaddleOCR, paddleocr
+from paddleocr import PaddleOCR
 from PIL import Image
 
 logger = logging.getLogger(__name__)
@@ -48,9 +48,10 @@ class OCRService:
             languages: Languages to detect. Default: ["en"]
         """
         self.languages = languages
+        language = languages[0] if languages else "en"
         self.ocr = PaddleOCR(
             use_angle_cls=True,
-            lang=languages,
+            lang=language,
             use_gpu=False,  # Set to True if GPU available
             show_log=False,
         )

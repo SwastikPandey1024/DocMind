@@ -1,6 +1,9 @@
-export { LoginPage } from './auth/LoginPage';
-export { RegisterPage } from './auth/RegisterPage';
-export { DashboardPage } from './dashboard/DashboardPage';
-export { DocumentsPage } from './documents/DocumentsPage';
-export { ChatPage } from './chat/ChatPage';
-export { SettingsPage } from './settings/SettingsPage';
+export { LoginPage } from './LoginPage';
+export { RegisterPage } from './RegisterPage';
+export { DashboardPage } from './DashboardPage';
+export { DocumentsPage } from './DocumentsPage';
+export { DocumentDetailPage } from './DocumentDetailPage';
+export { UploadPage } from './UploadPage';
+export { ChatPage } from './ChatPage';
+export { HistoryPage } from './HistoryPage';
+export { SettingsPage } from './SettingsPage';

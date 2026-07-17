@@ -1,35 +1,39 @@
+version: '3.8'
+
 services:
   postgres:
     image: postgres:16-alpine
+    container_name: docmind-postgres-prod
     restart: always
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-docmind}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD required}
     volumes:
-      - /mnt/data/postgres:/var/lib/postgresql/data
+      - postgres_data_prod:/var/lib/postgresql/data
     networks:
       - docmind
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
       interval: 10s
       timeout: 5s
       retries: 5
 
   backend:
-    image: docmind-backend:latest
+    image: ${DOCKER_REGISTRY:-docker.io}/docmind-backend:${VERSION:-latest}
+    container_name: docmind-backend-prod
     restart: always
     environment:
       APP_ENV: production
-      DEBUG: false
-      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
-      JWT_SECRET: ${JWT_SECRET}
-      UPLOAD_DIR: /app/storage/uploads
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      OLLAMA_HOST: ${OLLAMA_HOST}
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:?}@postgres:5432/${POSTGRES_DB:-docmind}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET required}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://ollama:11434}
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL:-bge-small}
+      MAX_UPLOAD_SIZE_MB: ${MAX_UPLOAD_SIZE_MB:-100}
     volumes:
-      - /mnt/data/uploads:/app/storage/uploads
-      - /mnt/data/logs:/app/storage/logs
+      - storage_uploads_prod:/app/storage/uploads
+      - storage_vectorstore_prod:/app/storage/vectorstore
+      - storage_logs_prod:/app/storage/logs
     networks:
       - docmind
     depends_on:
@@ -38,43 +42,47 @@ services:
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
-      timeout: 5s
+      timeout: 10s
       retries: 3
 
   frontend:
-    image: docmind-frontend:latest
+    image: ${DOCKER_REGISTRY:-docker.io}/docmind-frontend:${VERSION:-latest}
+    container_name: docmind-frontend-prod
     restart: always
-    ports:
-      - "80:80"
-      - "443:443"
     environment:
-      VITE_API_BASE_URL: ${VITE_API_BASE_URL}
-    volumes:
-      - /etc/letsencrypt:/etc/letsencrypt:ro
+      VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8000}
     networks:
       - docmind
     depends_on:
       - backend
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      test: ["CMD", "wget", "-q", "-O-", "http://localhost/"]
       interval: 30s
-      timeout: 5s
+      timeout: 10s
       retries: 3
 
   ollama:
     image: ollama/ollama:latest
+    container_name: docmind-ollama-prod
     restart: always
     environment:
       OLLAMA_HOST: 0.0.0.0:11434
     volumes:
-      - /mnt/data/ollama:/root/.ollama
+      - ollama_data_prod:/root/.ollama
     networks:
       - docmind
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
       interval: 30s
-      timeout: 5s
+      timeout: 10s
       retries: 3
+
+volumes:
+  postgres_data_prod:
+  ollama_data_prod:
+  storage_uploads_prod:
+  storage_vectorstore_prod:
+  storage_logs_prod:
 
 networks:
   docmind:

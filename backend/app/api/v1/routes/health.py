@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from app.database.dependencies import get_db_session
+from app.auth.dependencies import get_db_session
 from app.schemas.health import HealthResponse
 
 logger = logging.getLogger(__name__)
@@ -13,7 +13,7 @@ router = APIRouter(prefix="/health", tags=["health"])
 
 
 @router.get("", response_model=HealthResponse)
-async def health_check() -> HealthResponse:
+async def health_check(db: Session = Depends(get_db_session)) -> HealthResponse:
 
     """
     Health check endpoint.
@@ -27,12 +27,6 @@ async def health_check() -> HealthResponse:
     try:
         # Verify database connection
         db.execute(text("SELECT 1"))
-        
-        # Verify key tables exist
-        db.execute(text("""
-            SELECT 1 FROM information_schema.tables 
-            WHERE table_name = 'users'
-        """))
         
         return HealthResponse(
             status="healthy",

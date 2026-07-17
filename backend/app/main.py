@@ -1,54 +1,37 @@
 import logging
 from contextlib import asynccontextmanager
-from pathlib import Path
 from typing import Optional
 
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 from sqlalchemy.exc import OperationalError
-from sqlalchemy.orm import sessionmaker
 
 from app.api.v1.routes import auth_router, documents_router, health_router
 from app.api.v1.routes.chat import set_services as set_chat_services
 from app.api.v1.routes import chat_router
 from app.api.v1.routes.ready import router as ready_router
-
 from app.core.config import get_settings
 from app.core.logging import setup_logging
 from app.database.engine import engine
 from app.middleware import setup_cors, setup_exceptions, setup_request_logging
 from app.schemas.health import HealthResponse
 from app.startup import validate_startup
-from app.services.embedding_service import EmbeddingService
-from app.services.llm_service import LLMService, OllamaProvider
-from app.services.rag_memory_store import RAGMemoryStore
-from app.services.chat_service import ChatService
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
 setup_logging()
 
-# Global services
-embedding_service: Optional[EmbeddingService] = None
-rag_memory_store: Optional[RAGMemoryStore] = None
-chat_service: Optional[ChatService] = None
-llm_service: Optional[LLMService] = None
-
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application startup and shutdown lifecycle."""
-
-    global embedding_service, rag_memory_store, chat_service, llm_service
-
     # Startup
     logger.info(f"Starting DocMind Backend (env={settings.environment})")
 
-    # Run startup validation (ONLY database configuration should be fatal)
+    # Validate startup configuration (ONLY database is fatal)
     try:
         await validate_startup()
     except RuntimeError as e:
-        # Treat config errors as fatal (per requirement)
         logger.error(f"✗ Startup validation failed: {e}")
         raise
 
@@ -61,14 +44,15 @@ async def lifespan(app: FastAPI):
         logger.error(f"✗ Database connection failed: {e}")
         raise
 
-    # AI services MUST NOT block server boot.
-    # Lazy-load them later on first request.
-    try:
-        app.state.ollama_status = "degraded"
-        app.state.embedding_status = "not_loaded"
-        app.state.vectorstore_status = "empty"
-    except Exception:
-        pass
+    # AI services initialized LAZILY on first request
+    # Don't block server boot
+    app.state.services_initialized = False
+    app.state.embedding_service = None
+    app.state.rag_memory_store = None
+    app.state.chat_service = None
+    app.state.llm_service = None
+
+    logger.info("✓ Backend ready (AI services lazy-loaded)")
 
     yield
 
@@ -81,8 +65,7 @@ async def lifespan(app: FastAPI):
     logger.info("✓ Resources cleaned up")
 
 
-
-# Create FastAPI app with lifespan
+# Create FastAPI app
 app = FastAPI(
     title=settings.app_name,
     version=settings.app_version,
@@ -92,15 +75,14 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# If AI dependencies are unavailable, we still want the server to boot.
-# These flags are set during lazy initialization / degraded mode.
-app.state.ollama_status = "unknown"
-app.state.embedding_status = "unknown"
-app.state.vectorstore_status = "unknown"
-app.state.storage_status = "unknown"
+# Initialize state
+app.state.services_initialized = False
+app.state.embedding_service = None
+app.state.rag_memory_store = None
+app.state.chat_service = None
+app.state.llm_service = None
 
-
-# Setup middleware (order matters - exceptions first, then logging, then CORS)
+# Setup middleware (order matters)
 setup_exceptions(app)
 setup_request_logging(app)
 setup_cors(app)
@@ -113,12 +95,9 @@ app.include_router(ready_router, prefix="/api/v1", tags=["health"])
 app.include_router(chat_router, prefix="/api/v1", tags=["chat"])
 
 
-
-
-
 @app.get("/health", response_model=HealthResponse, tags=["health"])
 async def health_check() -> HealthResponse:
-    """Health check endpoint for load balancers and orchestration."""
+    """Health check endpoint for load balancers."""
     return HealthResponse(status="healthy", service="DocMind Backend")
 
 
@@ -161,6 +140,3 @@ def custom_openapi():
 
 
 app.openapi = custom_openapi
-
-
-

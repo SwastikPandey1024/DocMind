@@ -15,7 +15,7 @@ from app.services.ocr_service import OCRService
 from app.services.text_cleaning_service import TextCleaningService
 from app.services.vectorstore_service import FAISSVectorStore
 from app.services.document_processing_pipeline import DocumentProcessingPipeline
-from app.database.engine import SessionLocal
+from app.database.session import SessionLocal
 
 logger = logging.getLogger(__name__)
 

@@ -1,55 +1,76 @@
-# Backend Dockerfile (multi-stage)
+# Multi-stage build for backend image size optimization
 FROM python:3.12-slim as builder
 
 WORKDIR /build
 
-# Install system dependencies
+# Install build dependencies only
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libpq-dev \
-    git \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements
+# Copy only requirements for wheel building
 COPY backend/requirements.txt .
 
 # Build wheels
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
-pip wheel \
-    --wheel-dir /build/wheels \
-    -r requirements.txt
+    pip wheel --no-cache-dir --wheel-dir /build/wheels -r requirements.txt
 
 # ============================================
-
+# Final runtime stage - minimal dependencies
 FROM python:3.12-slim
 
 WORKDIR /app
 
-# Install runtime dependencies only
+# Set Python environment variables
+ENV PYTHONPATH=/app \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    LIBGLVND_PATH=/usr/lib/x86_64-linux-gnu
+
+# Install runtime dependencies for OpenCV and PostgreSQL
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq5 \
     curl \
     netcat-traditional \
-    && rm -rf /var/lib/apt/lists/*
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender1 \
+    libgl1 \
+    libgomp1 \
+    libglvnd0 \
+    && rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
 # Copy wheels from builder
-COPY --from=builder /build/wheels /wheels
+COPY --from=builder /build/wheels /tmp/wheels
 
-# Install wheels
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir --no-index --find-links=/wheels /wheels/* && \
-    rm -rf /wheels
+# Install wheels with proper shell expansion
+RUN cd /tmp/wheels && \
+    pip install --no-cache-dir --no-index --find-links=. *.whl && \
+    cd / && rm -rf /tmp/wheels /root/.cache/pip/*
 
-# Copy application
+# Cleanup Python caches
+RUN find /usr/local/lib/python3.12/site-packages -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true && \
+    find /usr/local/lib/python3.12/site-packages -name "*.pyc" -delete 2>/dev/null || true
+
+# Copy application (exclude test files and unnecessary artifacts)
 COPY backend /app
+
+# Remove unnecessary files to reduce image size
+RUN rm -rf /app/tests /app/.venv /app/.env /app/__pycache__ /app/node_modules 2>/dev/null || true && \
+    find /app -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true && \
+    find /app -name "*.pyc" -delete 2>/dev/null || true && \
+    find /app -name "*.pyo" -delete 2>/dev/null || true && \
+    find /app -name "*.dist-info" -type d -exec rm -rf {} + 2>/dev/null || true
 
 # Copy startup script
 COPY backend/startup.sh /app/startup.sh
 RUN chmod +x /app/startup.sh
 
-# Create non-root user
+# Create non-root user and directories
 RUN useradd -m -u 1000 appuser && \
-    mkdir -p /app/storage/uploads /app/storage/logs && \
+    mkdir -p /app/storage/uploads /app/storage/logs /app/storage/vectorstore && \
     chown -R appuser:appuser /app
 
 USER appuser
@@ -60,5 +81,4 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
 
 EXPOSE 8000
 
-# Startup
 CMD ["/app/startup.sh"]
