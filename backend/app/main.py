@@ -5,6 +5,7 @@ from typing import Optional
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 from sqlalchemy.exc import OperationalError
+from sqlalchemy import text
 
 from app.api.v1.routes import auth_router, documents_router, health_router
 from app.api.v1.routes.chat import set_services as set_chat_services
@@ -38,7 +39,7 @@ async def lifespan(app: FastAPI):
     # Verify database connection (fatal)
     try:
         with engine.connect() as conn:
-            conn.execute("SELECT 1")
+            conn.execute(text("SELECT 1"))
         logger.info("✓ Database connection verified")
     except OperationalError as e:
         logger.error(f"✗ Database connection failed: {e}")

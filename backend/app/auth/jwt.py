@@ -50,7 +50,8 @@ def decode_token(token: str, *, expected_type: TokenType) -> dict[str, Any]:
     try:
         payload = jwt.decode(token, settings.jwt_secret, algorithms=[settings.jwt_algorithm])
     except JWTError as exc:
-        raise TokenDecodeError("Invalid or expired token.") from exc
+        print("JWT ERROR:", repr(exc))
+        raise
 
     if payload.get("type") != expected_type:
         raise TokenDecodeError("Invalid token type.")

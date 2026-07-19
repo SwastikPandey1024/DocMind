@@ -34,6 +34,13 @@ def get_current_user(
     Backward compatibility: this keeps existing behavior/response codes.
     """
     if credentials is None or not credentials.credentials:
+        print("=" * 80)
+        print("CREDENTIALS OBJECT:", credentials)
+        
+        if credentials:
+             print("SCHEME:", credentials.scheme)
+             print("TOKEN:", credentials.credentials[:40] + "...")
+        print("=" * 80)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Authentication required.",

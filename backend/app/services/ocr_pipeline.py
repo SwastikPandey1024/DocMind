@@ -96,8 +96,7 @@ def start_ocr_processing(document_id: uuid.UUID):
     Can be called from upload endpoint.
     """
     try:
-        # Try to run async
-        asyncio.create_task(process_document_background(document_id))
+        loop = asyncio.get_running_loop()
+        loop.create_task(process_document_background(document_id))
     except RuntimeError:
-        # Fallback: run synchronously if no event loop
         asyncio.run(process_document_background(document_id))

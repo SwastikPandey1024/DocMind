@@ -53,7 +53,6 @@ class OCRService:
             use_angle_cls=True,
             lang=language,
             use_gpu=False,  # Set to True if GPU available
-            show_log=False,
         )
         self.confidence_threshold = 0.3
     
