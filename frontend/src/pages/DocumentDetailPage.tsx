@@ -11,10 +11,22 @@ export function DocumentDetailPage() {
   const queryClient = useQueryClient();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  const { data: document, isLoading } = useQuery({
+  const {
+    data: document,
+    isLoading,
+  } = useQuery({
     queryKey: ['document', documentId],
     queryFn: () => apiClient.getDocument(documentId!),
     enabled: !!documentId,
+
+    refetchInterval: (query) => {
+      const status = query.state.data?.status;
+      if (status === "READY") return false;
+      if (status === "FAILED") return false;
+      return 2000;
+    },
+    
+    refetchOnWindowFocus: true,
   });
 
   const deleteMutation = useMutation({

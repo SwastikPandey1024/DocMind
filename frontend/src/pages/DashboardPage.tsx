@@ -11,12 +11,17 @@ export function DashboardPage() {
   const { user } = useAuth();
   const [stats, setStats] = useState({ documents: 0, chats: 0 });
 
-  const { data: documents = [], isLoading } = useQuery({
-    queryKey: ['documents'],
-    queryFn: () => apiClient.listDocuments(0, 100),
-    staleTime: 5 * 60 * 1000,
+  const {
+    data: documents = [],
+    isLoading,
+  } = useQuery({
+    queryKey: ["documents"],
+    queryFn: () => apiClient.listDocuments(0, 1000),
+  
+    staleTime: 0,
+    refetchInterval: 3000,
+    refetchOnWindowFocus: true,
   });
-
   useEffect(() => {
     setStats({ documents: documents.length, chats: 0 });
   }, [documents]);
@@ -46,7 +51,7 @@ export function DashboardPage() {
                     {stats.documents}
                   </p>
                 </div>
-                <div className="text-4xl">📄</div>
+                <div className="text-4xl">📄Total Documents</div>
               </div>
             </div>
 
@@ -58,7 +63,7 @@ export function DashboardPage() {
                     {stats.chats}
                   </p>
                 </div>
-                <div className="text-4xl">💬</div>
+                <div className="text-4xl">🤖AI Chats</div>
               </div>
             </div>
 
@@ -70,7 +75,7 @@ export function DashboardPage() {
                     {user?.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}
                   </p>
                 </div>
-                <div className="text-4xl">🗓️</div>
+                <div className="text-4xl">🎉Member Since</div>
               </div>
             </div>
           </div>
@@ -81,7 +86,19 @@ export function DashboardPage() {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <button
                 onClick={() => navigate('/documents/upload')}
-                className="flex items-center justify-center rounded-lg bg-blue-600 px-6 py-4 text-white hover:bg-blue-700"
+                className="
+                flex items-center
+                justify-center
+                rounded-lg
+                bg-blue-600
+                px-6
+                py-4
+                text-white
+                hover:bg-blue-700
+                transition-all
+                duration-300
+                hover:scale-[1.02]
+                hover:shadow-xl"
               >
                 <span className="text-2xl mr-2">📤</span>
                 <div className="text-left">
@@ -109,14 +126,24 @@ export function DashboardPage() {
             {isLoading ? (
               <LoadingSpinner />
             ) : documents.length === 0 ? (
-              <div className="rounded-lg bg-white p-8 text-center dark:bg-gray-800">
-                <p className="text-gray-600 dark:text-gray-400">No documents yet</p>
-                <button
-                  onClick={() => navigate('/documents/upload')}
-                  className="mt-4 inline-block text-blue-600 hover:text-blue-700 dark:text-blue-400"
-                >
-                  Upload your first document →
-                </button>
+              <div className="rounded-xl bg-white dark:bg-gray-800 p-10 shadow text-center">
+                <div className="text-6xl mb-4">
+                  📄
+                </div>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                  No documents uploaded yet
+                </h2>
+                <p className="mt-3 text-gray-600 dark:text-gray-400">
+                  Upload your first PDF and start chatting with AI.
+                </p>
+                <div className="mt-6 flex justify-center">
+                  <button
+                  onClick={()=>navigate("/documents/upload")}
+                  className="rounded-lg bg-blue-600 px-6 py-3 text-white hover:bg-blue-700 transition"
+                  >
+                    Upload PDF
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="overflow-hidden rounded-lg bg-white shadow dark:bg-gray-800">
@@ -147,22 +174,26 @@ export function DashboardPage() {
                           {doc.pages || '-'}
                         </td>
                         <td className="px-6 py-4 text-sm">
-                          <span
-                            className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
-                              doc.status === 'READY'
-                                ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
-                                : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
-                            }`}
+                        <span
+                        className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold transition-all duration-300 ${
+                          doc.status==="READY"
+                          ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                          : doc.status==="PROCESSING"
+                          ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400 animate-pulse"
+                          : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                          }`}
                           >
-                            {doc.status}
-                          </span>
+                            {doc.status==="READY" && "🟢 Ready"}
+                            {doc.status==="PROCESSING" && "🟡 Processing"}
+                            {doc.status==="FAILED" && "🔴 Failed"}
+                        </span>
                         </td>
                         <td className="px-6 py-4 text-sm">
                           <button
                             onClick={() => navigate(`/documents/${doc.document_id}`)}
-                            className="text-blue-600 hover:text-blue-700 dark:text-blue-400"
+                            className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
                           >
-                            View
+                            Open Chat →
                           </button>
                         </td>
                       </tr>

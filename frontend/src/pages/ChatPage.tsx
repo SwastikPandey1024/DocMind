@@ -21,10 +21,33 @@ export function ChatPage() {
   const [isStreaming, setIsStreaming] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const { data: document, isLoading: docLoading } = useQuery({
+  const {
+    data: document,
+    isLoading: docLoading,
+  } = useQuery({
     queryKey: ['document', documentId],
     queryFn: () => apiClient.getDocument(documentId!),
     enabled: !!documentId,
+
+    staleTime: 0,
+
+    refetchInterval: (query) => {
+      
+      const status=query.state.data?.status;
+      
+      if(status==="READY")
+      
+      return false;
+      
+      if(status==="FAILED")
+      
+      return false;
+      
+      return 2000;
+      
+    },
+
+    refetchOnWindowFocus: true,
   });
 
   const handleSendMessage = async (e: React.FormEvent) => {
@@ -107,6 +130,7 @@ export function ChatPage() {
                     ...msg,
                     answer: fullAnswer,
                     citations: finalCitations,
+                    isLoading: false,
                   }
                 : msg
             )
@@ -183,13 +207,17 @@ export function ChatPage() {
               Status: 
             </p>
             <span
-              className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
+              className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${
                 document?.status === 'READY'
-                  ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
-                  : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
+                 ? "bg-green-100 text-green-700"
+                 : document?.status === "PROCESSING"
+                 ? "bg-yellow-100 text-yellow-700 animate-pulse"
+                 : "bg-red-100 text-red-700"
               }`}
             >
-              {document?.status}
+              {document?.status === "READY" && "🟢 Ready"}
+              {document?.status === "PROCESSING" && "🟡 Processing"}
+              {document?.status === "FAILED" && "🔴 Failed"}
             </span>
           </div>
         </div>
@@ -197,16 +225,42 @@ export function ChatPage() {
         {/* Messages */}
         <div className="flex-1 overflow-y-auto p-6">
           {messages.length === 0 ? (
-            <div className="flex h-full items-center justify-center">
-              <div className="text-center">
-                <div className="mb-4 text-5xl">💬</div>
-                <p className="text-gray-600 dark:text-gray-400">
-                  {document?.status !== 'READY'
-                    ? 'Document is being processed. Please wait...'
-                    : 'Start asking questions about the document'}
-                </p>
-              </div>
-            </div>
+            <div className="flex h-full flex-col items-center justify-center text-center">
+              {document?.status !== "READY" ? (
+                <div className="rounded-2xl bg-blue-50 dark:bg-blue-900/20 p-8 shadow-lg max-w-md w-full text-center">
+                  <LoadingSpinner />
+                  <h3 className="mt-5 text-xl font-bold text-gray-900 dark:text-white">
+                    Processing your document...
+                  </h3>
+                  <div className="mt-5 space-y-2 text-left text-sm text-gray-600 dark:text-gray-300">
+                    <p>📄 OCR Extraction</p>
+                    <p>🧹 Cleaning Text</p>
+                    <p>✂ Chunk Generation</p>
+                    <p>🧠 AI Embeddings</p>
+                    <p>📚 Building Search Index</p>
+                  </div>
+                  <div className="mt-6 flex justify-center gap-2">
+                    <span className="h-2 w-2 animate-ping rounded-full bg-blue-500"></span>
+                    <span className="text-sm text-blue-600 dark:text-blue-400">
+                      This page refreshes automatically
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center">
+                  <div className="mb-4 text-6xl">
+                    🤖
+                  </div>
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                    Ask anything about your document
+                  </h2>
+                  
+                  <p className="mt-2 text-gray-500 dark:text-gray-400">
+                    AI will answer using only your uploaded PDF.
+                  </p>
+                </div>
+              )}
+        </div>
           ) : (
             <div className="space-y-6">
               {messages.map((msg) => (
@@ -269,11 +323,7 @@ export function ChatPage() {
 
         {/* Input */}
         <div className="border-t border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
-          {document?.status !== 'READY' && (
-            <div className="mb-4 rounded-lg bg-yellow-50 p-3 text-sm text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300">
-              ⏳ Document is being processed. Chat will be available when ready.
-            </div>
-          )}
+    
           <form onSubmit={handleSendMessage} className="flex gap-4">
             <input
               type="text"
@@ -292,7 +342,11 @@ export function ChatPage() {
               disabled={isStreaming || !input.trim() || document?.status !== 'READY'}
               className="rounded-lg bg-blue-600 px-6 py-3 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isStreaming ? '📤' : '→'}
+              {isStreaming ? (
+                <LoadingSpinner />
+              ) : (
+                "➜"
+              )}
             </button>
           </form>
         </div>

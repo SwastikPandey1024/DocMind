@@ -9,10 +9,16 @@ export function DocumentsPage() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
 
-  const { data: documents = [], isLoading } = useQuery({
+  const {
+    data: documents = [],
+    isLoading,
+  } = useQuery({
     queryKey: ['documents'],
     queryFn: () => apiClient.listDocuments(0, 1000),
-    staleTime: 5 * 60 * 1000,
+
+    staleTime: 0,
+    refetchInterval: 3000,
+    refetchOnWindowFocus: true,
   });
 
   const filtered = documents.filter((doc) =>
