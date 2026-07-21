@@ -52,7 +52,6 @@ class OCRService:
         self.ocr = PaddleOCR(
             use_angle_cls=True,
             lang=language,
-            use_gpu=False,  # Set to True if GPU available
         )
         self.confidence_threshold = 0.3
     
@@ -93,7 +92,7 @@ class OCRService:
                     image_bgr = cv2.cvtColor(image_array, cv2.COLOR_RGB2BGR)
                     
                     # Run OCR on page
-                    ocr_result = self.ocr.ocr(image_bgr, cls=True)
+                    ocr_result = self.ocr.ocr(image_bgr)
                     
                     # Parse results
                     page_blocks = []
@@ -185,7 +184,7 @@ class OCRService:
             image_bgr = image_array
         
         # Run OCR
-        ocr_result = self.ocr.ocr(image_bgr, cls=True)
+        ocr_result = self.ocr.ocr(image_bgr)
         
         # Parse results
         blocks = []

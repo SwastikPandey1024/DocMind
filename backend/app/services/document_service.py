@@ -65,9 +65,16 @@ class DocumentService:
             )
 
             # Duplicate detection
+            print("=" * 60)
+            print("USER :", user_id)
+            print("CHECKSUM :", meta_all.checksum_sha256)
             existing = self.document_repository.get_by_user_and_checksum(
-                user_id=user_id, checksum=meta_all.checksum_sha256
+                  user_id=user_id,
+                  checksum=meta_all.checksum_sha256,
             )
+            print("EXISTING :", existing)
+            print("=" * 60)
+
             if existing is not None:
                 logger.info(
                     "document.upload.duplicate",

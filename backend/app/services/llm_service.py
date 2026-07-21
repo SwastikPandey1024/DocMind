@@ -107,13 +107,13 @@ class OpenAIProvider(LLMProvider):
 class OllamaProvider(LLMProvider):
     """Local Ollama provider."""
     
-    def __init__(self, base_url: str = "http://localhost:11434", model: str = "llama2"):
+    def __init__(self, base_url: str = "http://localhost:11434", model: str = "llama3.2"):
         """
         Initialize Ollama provider.
         
         Args:
             base_url: Ollama server URL
-            model: Model name (default: llama2)
+            model: Model name (default: llama3.2)
         """
         self.base_url = base_url.rstrip("/")
         self.model = model

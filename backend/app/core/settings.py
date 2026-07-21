@@ -29,7 +29,7 @@ class Settings(BaseSettings):
     # AI/ML Services
     openai_api_key: str | None = Field(default=None, validation_alias="OPENAI_API_KEY")
     ollama_base_url: str = Field(default="http://ollama:11434", validation_alias="OLLAMA_BASE_URL")
-    ollama_model: str = Field(default="llama2", validation_alias="OLLAMA_MODEL")
+    ollama_model: str = Field(default="llama3.2", validation_alias="OLLAMA_MODEL")
     embedding_model: str = Field(default="bge-small", validation_alias="EMBEDDING_MODEL")
     ocr_language: str = Field(default="en", validation_alias="OCR_LANGUAGE")
     
