@@ -20,6 +20,11 @@ __pycache__/
 htmlcov/
 venv/
 .venv/
+*.egg-info/
+dist/
+build/
+*.egg
+*.whl
 
 # ===========================
 # Node
@@ -36,6 +41,7 @@ dist/
 build/
 coverage/
 *.tsbuildinfo
+*.d.ts
 
 # ===========================
 # IDE
@@ -43,6 +49,7 @@ coverage/
 .vscode/
 .idea/
 *.swp
+*.swo
 
 # ===========================
 # Storage
@@ -67,3 +74,14 @@ backend/storage/
 .DS_Store
 Thumbs.db
 *.lnk
+
+# ===========================
+# Duplicate/Stale Directories
+# ===========================
+$root/
+
+# ===========================
+# Vite generated
+# ===========================
+vite.config.d.ts
+

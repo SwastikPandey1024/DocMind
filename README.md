@@ -1,34 +1,211 @@
-# DocMind - AI-Powered OCR & RAG Document Chat
+<div align="center">
+  <h1>🧠 DocMind</h1>
+  <p><strong>AI-Powered OCR + RAG Document Chat System</strong></p>
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Python](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/)
-[![Node.js](https://img.shields.io/badge/node-20+-green.svg)](https://nodejs.org/)
-[![FastAPI](https://img.shields.io/badge/fastapi-0.139-green.svg)](https://fastapi.tiangolo.com/)
-[![React](https://img.shields.io/badge/react-19-blue.svg)](https://react.dev/)
-[![Docker](https://img.shields.io/badge/docker-ready-2496ED.svg)](https://www.docker.com/)
+  <p>
+    <a href="https://www.python.org/">
+      <img src="https://img.shields.io/badge/Python-3.12%2B-3776AB?logo=python&logoColor=white" alt="Python">
+    </a>
+    <a href="https://fastapi.tiangolo.com/">
+      <img src="https://img.shields.io/badge/FastAPI-0.139-009688?logo=fastapi&logoColor=white" alt="FastAPI">
+    </a>
+    <a href="https://react.dev/">
+      <img src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white" alt="React">
+    </a>
+    <a href="https://www.typescriptlang.org/">
+      <img src="https://img.shields.io/badge/TypeScript-5.7-3178C6?logo=typescript&logoColor=white" alt="TypeScript">
+    </a>
+    <a href="https://tailwindcss.com/">
+      <img src="https://img.shields.io/badge/TailwindCSS-3.4-06B6D4?logo=tailwindcss&logoColor=white" alt="TailwindCSS">
+    </a>
+    <a href="https://www.docker.com/">
+      <img src="https://img.shields.io/badge/Docker-ready-2496ED?logo=docker&logoColor=white" alt="Docker">
+    </a>
+    <a href="https://www.postgresql.org/">
+      <img src="https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white" alt="PostgreSQL">
+    </a>
+  </p>
 
-DocMind is a production-ready AI SaaS application that combines **Optical Character Recognition (OCR)**, **Retrieval-Augmented Generation (RAG)**, and **LLM-powered chat** to enable intelligent document understanding and Q&A.
+  <p>
+    <a href="LICENSE">
+      <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License">
+    </a>
+    <a href="CODE_OF_CONDUCT.md">
+      <img src="https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg" alt="Code of Conduct">
+    </a>
+    <a href="https://github.com/SwastikPandey1024/DocMind/issues">
+      <img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg" alt="Contributions Welcome">
+    </a>
+    <a href="https://github.com/SwastikPandey1024/DocMind/releases">
+      <img src="https://img.shields.io/badge/release-v1.0.0-blue.svg" alt="Release">
+    </a>
+  </p>
 
-**Key Capabilities:**
-- 📄 Extract text from PDFs using **PaddleOCR** with multi-language support
-- 🧹 Automatic text cleaning and noise removal
-- 📚 Semantic chunking with configurable overlap
-- 🔍 Vector similarity search with **FAISS**
-- 💬 LLM-powered Q&A with streaming responses
-- 🔐 JWT authentication with role-based access
-- ⚡ Async/await architecture for high concurrency
-- 🐳 Docker & Docker Compose for production deployment
-- 📊 Comprehensive audit logging
+  <br>
+
+  <p align="center">
+    <strong>
+      <a href="#-quick-start">Quick Start</a> •
+      <a href="#-features">Features</a> •
+      <a href="#-screenshots">Screenshots</a> •
+      <a href="#-architecture">Architecture</a> •
+      <a href="#-tech-stack">Tech Stack</a> •
+      <a href="#-api-documentation">API</a> •
+      <a href="#-docker">Docker</a> •
+      <a href="#-roadmap">Roadmap</a>
+    </strong>
+  </p>
+</div>
 
 ---
 
-## Architecture
+## 📖 Overview
+
+**DocMind** is a production-ready AI SaaS application that combines **Optical Character Recognition (OCR)**, **Retrieval-Augmented Generation (RAG)**, and **LLM-powered chat** to enable intelligent document understanding and Q&A.
+
+Upload PDFs, extract text using OCR, index content with semantic embeddings, and have natural conversations with your documents. DocMind supports both **local LLMs (Ollama)** and **cloud LLMs (OpenAI)**.
+
+---
+
+## ✨ Features
+
+<table>
+  <tr>
+    <td align="center">📄</td>
+    <td><strong>OCR Extraction</strong></td>
+    <td>High-accuracy text extraction from scanned and digital PDFs using PaddleOCR with multi-language support</td>
+  </tr>
+  <tr>
+    <td align="center">💬</td>
+    <td><strong>AI Document Chat</strong></td>
+    <td>Natural language Q&A with your documents — get answers grounded in your uploaded content</td>
+  </tr>
+  <tr>
+    <td align="center">🔍</td>
+    <td><strong>Semantic Search</strong></td>
+    <td>FAISS-powered vector similarity search finds the most relevant document sections for any query</td>
+  </tr>
+  <tr>
+    <td align="center">🧩</td>
+    <td><strong>RAG Pipeline</strong></td>
+    <td>End-to-end retrieval-augmented generation: chunk → embed → index → retrieve → generate</td>
+  </tr>
+  <tr>
+    <td align="center">🔐</td>
+    <td><strong>JWT Authentication</strong></td>
+    <td>Secure access with JWT tokens, refresh token rotation, and Argon2 password hashing</td>
+  </tr>
+  <tr>
+    <td align="center">🗄️</td>
+    <td><strong>PostgreSQL</strong></td>
+    <td>Reliable relational storage for users, documents, chat history with Alembic migrations</td>
+  </tr>
+  <tr>
+    <td align="center">🐳</td>
+    <td><strong>Docker Deployment</strong></td>
+    <td>Multi-stage Docker builds, Docker Compose for dev & production, health checks everywhere</td>
+  </tr>
+  <tr>
+    <td align="center">🌐</td>
+    <td><strong>REST API</strong></td>
+    <td>Fully documented RESTful API with OpenAPI/Swagger at <code>/docs</code></td>
+  </tr>
+</table>
+
+### 📋 Complete Feature List
+
+| Category | Feature | Status |
+|----------|---------|--------|
+| **Auth** | JWT with access/refresh tokens | ✅ |
+| **Auth** | User registration & login | ✅ |
+| **Auth** | Argon2 password hashing | ✅ |
+| **Auth** | Role-based access control (RBAC) | ✅ |
+| **Documents** | PDF upload with validation | ✅ |
+| **Documents** | Duplicate detection (SHA-256) | ✅ |
+| **Documents** | Document listing & deletion | ✅ |
+| **Documents** | Soft-delete for data retention | ✅ |
+| **OCR** | PaddleOCR text extraction | ✅ |
+| **OCR** | Multi-language support | ✅ |
+| **OCR** | Automatic text cleaning | ✅ |
+| **OCR** | Confidence-based filtering | ✅ |
+| **RAG** | Semantic text chunking | ✅ |
+| **RAG** | Embedding generation (BGE/MiniLM) | ✅ |
+| **RAG** | FAISS vector indexing | ✅ |
+| **RAG** | Similarity search with L2 distance | ✅ |
+| **Chat** | LLM-powered Q&A with streaming | ✅ |
+| **Chat** | Chat history persistence | ✅ |
+| **Chat** | Source citations | ✅ |
+| **LLM** | Ollama (local) integration | ✅ |
+| **LLM** | OpenAI (cloud) integration | ✅ |
+| **LLM** | Provider fallback mechanism | ✅ |
+| **Docker** | Multi-stage builds | ✅ |
+| **Docker** | Dev & production compose files | ✅ |
+| **Docker** | Health checks & monitoring | ✅ |
+| **Frontend** | React 19 + TypeScript + Vite | ✅ |
+| **Frontend** | TailwindCSS + Radix UI | ✅ |
+| **Frontend** | Dark mode support | ✅ |
+
+---
+
+## 📸 Screenshots
+
+<div align="center">
+  <table>
+    <tr>
+      <td align="center">
+        <img src="assets/screenshots/login.png" alt="Login Screen" width="400"/>
+        <br />
+        <em>Login & Registration</em>
+      </td>
+      <td align="center">
+        <img src="assets/screenshots/dashboard.png" alt="Dashboard" width="400"/>
+        <br />
+        <em>User Dashboard</em>
+      </td>
+    </tr>
+    <tr>
+      <td align="center">
+        <img src="assets/screenshots/upload-document.png" alt="Document Upload" width="400"/>
+        <br />
+        <em>Document Management</em>
+      </td>
+      <td align="center">
+        <img src="assets/screenshots/chat.png" alt="Chat Interface" width="400"/>
+        <br />
+        <em>AI Document Chat</em>
+      </td>
+    </tr>
+    <tr>
+      <td align="center">
+        <img src="assets/screenshots/processing.png" alt="AI Document Processing In Light Mode" width="400"/>
+        <br />
+        <em>AI Document Processing In Light Mode</em>
+      </td>
+      <td align="center">
+        <img src="assets/screenshots/dark-mode.png" alt="Processing In Dark Mode" width="400"/>
+        <br />
+        <em>AI Document Processing In Dark Mode</em>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" colspan="2">
+        <img src="assets/screenshots/swagger.png" alt="Swagger API Documentation" width="820"/>
+        <br />
+        <em>Interactive API Documentation (Swagger UI)</em>
+      </td>
+    </tr>
+  </table>
+</div>
+
+---
+
+## 🏗️ Architecture
 
 ```
-┌─────────────┐      ┌──────────────┐      ┌─────────────┐
-│   Browser   │──────│  React SPA   │──────│  FastAPI    │
-│   (React)   │      │  (Vite)      │      │  Backend    │
-└─────────────┘      └──────────────┘      └─────────────┘
+┌─────────────┐      ┌──────────────┐      ┌─────────────────┐
+│   Browser   │──────│  React SPA   │──────│  FastAPI Backend │
+│   (React)   │      │  (Vite)      │      │  (Port 8000)     │
+└─────────────┘      └──────────────┘      └─────────────────┘
                                                     │
                               ┌─────────────────────┼─────────────────────┐
                               │                     │                     │
@@ -43,72 +220,84 @@ DocMind is a production-ready AI SaaS application that combines **Optical Charac
                         └──────────────┘
 ```
 
-### Components
+### Core Processing Pipeline
 
-| Component | Purpose | Technology |
-|-----------|---------|-----------|
-| **Frontend** | Web UI for document upload, chat, history | React 19, TypeScript, Tailwind, Vite |
-| **Backend** | REST API & WebSocket server | FastAPI, Uvicorn, Python 3.12 |
-| **Database** | User, document, chat history storage | PostgreSQL 16 |
-| **OCR Pipeline** | PDF text extraction & cleaning | PaddleOCR, PyMuPDF |
-| **Embeddings** | Semantic text representation | SentenceTransformers (BGE) |
-| **Vector Store** | Similarity search index | FAISS |
-| **LLM Services** | Response generation | Ollama (local) / OpenAI (cloud) |
+```
+PDF Upload → OCR Extraction → Text Cleaning → Semantic Chunking
+    ↓                                                    │
+Chat Response ← LLM Generation ← Context Building ← FAISS Search
+```
+
+### Component Overview
+
+| Component | Technology | Purpose |
+|-----------|-----------|---------|
+| **Frontend** | React 19, TypeScript, Vite, TailwindCSS | Web UI for document upload, chat, history |
+| **Backend** | FastAPI, Python 3.12, SQLAlchemy | REST API, business logic, orchestration |
+| **Database** | PostgreSQL 16 | Users, documents, metadata, chat history |
+| **OCR** | PaddleOCR, PyMuPDF | Text extraction from scanned/digital PDFs |
+| **Embeddings** | SentenceTransformers | Semantic text representation |
+| **Vector Store** | FAISS | Similarity search indexing |
+| **LLM** | Ollama (local) / OpenAI (cloud) | Context-aware response generation |
 
 ---
 
-## Quick Start
+## 🛠️ Tech Stack
+
+### Backend
+![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.139-009688?logo=fastapi&logoColor=white)
+![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0-D71F00?logo=sqlalchemy&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)
+![FAISS](https://img.shields.io/badge/FAISS-1.14-blue)
+![PaddleOCR](https://img.shields.io/badge/PaddleOCR-2.10-blue)
+![OpenAI](https://img.shields.io/badge/OpenAI-API-412991?logo=openai&logoColor=white)
+![Ollama](https://img.shields.io/badge/Ollama-local-000?logo=ollama&logoColor=white)
+
+### Frontend
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6?logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.4-06B6D4?logo=tailwindcss&logoColor=white)
+![TanStack Query](https://img.shields.io/badge/TanStack%20Query-5-FF4154?logo=reactquery&logoColor=white)
+![React Router](https://img.shields.io/badge/React%20Router-7-CA4245?logo=reactrouter&logoColor=white)
+
+### DevOps
+![Docker](https://img.shields.io/badge/Docker-24-2496ED?logo=docker&logoColor=white)
+![Docker Compose](https://img.shields.io/badge/Docker%20Compose-3.8-2496ED?logo=docker&logoColor=white)
+![Nginx](https://img.shields.io/badge/Nginx-alpine-009639?logo=nginx&logoColor=white)
+
+---
+
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- Docker & Docker Compose (recommended)
-- OR: Python 3.12+, Node.js 20+, PostgreSQL 16
+- **Docker & Docker Compose** (recommended path)
+- **OR** Python 3.12+, Node.js 20+, PostgreSQL 16
 
 ### Option 1: Docker Compose (Recommended)
 
 ```bash
-# Clone repository
+# Clone the repository
 git clone https://github.com/SwastikPandey1024/DocMind.git
 cd DocMind
 
-# Build & start services
+# Build and start all services
 docker compose up -d
 
-# Wait for services to be healthy (30-60s)
+# Wait for services to become healthy (30-60 seconds)
 docker compose ps
 
-# Access application
-- Frontend: http://localhost
-- API Docs: http://localhost:8000/docs
-- API: http://localhost:8000
+# Access the application
+open http://localhost          # Frontend
+open http://localhost:8000/docs # API Documentation
 ```
 
 ### Option 2: Local Development
 
-**Backend:**
+**1. Start PostgreSQL:**
 ```bash
-cd backend
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements.txt
-
-# Setup database
-alembic upgrade head
-
-# Start backend
-uvicorn app.main:app --reload
-```
-
-**Frontend:**
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-**PostgreSQL:**
-```bash
-# Using Docker
 docker run -d \
   -e POSTGRES_DB=docmind \
   -e POSTGRES_USER=postgres \
@@ -117,188 +306,94 @@ docker run -d \
   postgres:16-alpine
 ```
 
----
-
-## API Documentation
-
-### Authentication
-
-All protected endpoints require JWT Bearer token in `Authorization` header.
-
+**2. Backend:**
 ```bash
-# Register
-POST /api/v1/auth/register
-{
-  "name": "John Doe",
-  "email": "john@example.com",
-  "password": "SecurePassword123"
-}
-
-# Login
-POST /api/v1/auth/login
-{
-  "email": "john@example.com",
-  "password": "SecurePassword123"
-}
-
-# Response
-{
-  "access_token": "eyJ0eXAiOiJKV1QiLCJhbGc...",
-  "refresh_token": "eyJ0eXAiOiJKV1QiLCJhbGc...",
-  "token_type": "bearer"
-}
+cd backend
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+alembic upgrade head
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-### Document Operations
-
+**3. Frontend:**
 ```bash
-# Upload PDF
-POST /api/v1/documents/upload
-Headers: Authorization: Bearer <token>
-Body: multipart/form-data (file)
-
-# List documents
-GET /api/v1/documents
-Headers: Authorization: Bearer <token>
-
-# Get document details
-GET /api/v1/documents/{document_id}
-Headers: Authorization: Bearer <token>
-
-# Delete document
-DELETE /api/v1/documents/{document_id}
-Headers: Authorization: Bearer <token>
-```
-
-### Chat & RAG
-
-```bash
-# Chat with document
-POST /api/v1/chat
-Headers: Authorization: Bearer <token>
-{
-  "document_id": "uuid",
-  "question": "What is the main topic?",
-  "temperature": 0.7,
-  "include_sources": true
-}
-
-# Stream chat response
-POST /api/v1/chat/stream
-(Server-Sent Events)
-
-# Get chat history
-GET /api/v1/chat/history/{document_id}
-Headers: Authorization: Bearer <token>
-```
-
-### Health & Monitoring
-
-```bash
-# Health check (no auth required)
-GET /api/v1/health
-
-# Readiness check
-GET /api/v1/ready
-```
-
-Full OpenAPI documentation available at: `http://localhost:8000/docs`
-
----
-
-## Project Structure
-
-```
-DocMind/
-├── backend/
-│   ├── app/
-│   │   ├── api/v1/
-│   │   │   ├── routes/          # API endpoints
-│   │   │   ├── schemas/         # Pydantic models
-│   │   │   └── dependencies/    # FastAPI dependencies
-│   │   ├── models/              # SQLAlchemy ORM models
-│   │   ├── repositories/        # Data access layer
-│   │   ├── services/            # Business logic
-│   │   │   ├── ocr_service.py
-│   │   │   ├── embedding_service.py
-│   │   │   ├── llm_service.py
-│   │   │   ├── chat_service.py
-│   │   │   ├── rag_service.py
-│   │   │   └── vectorstore_service.py
-│   │   ├── auth/                # Authentication
-│   │   ├── middleware/          # CORS, logging, exceptions
-│   │   ├── core/                # Config, constants, logging
-│   │   └── database/            # DB engine, session, base
-│   ├── alembic/                 # Database migrations
-│   ├── tests/                   # Unit & integration tests
-│   ├── requirements.txt
-│   └── startup.sh
-├── frontend/
-│   ├── src/
-│   │   ├── app/                 # App entry point
-│   │   ├── components/          # React components
-│   │   ├── pages/               # Route pages
-│   │   ├── contexts/            # React contexts
-│   │   ├── hooks/               # Custom hooks
-│   │   ├── services/            # API client
-│   │   ├── types/               # TypeScript types
-│   │   └── utils/               # Utilities
-│   ├── package.json
-│   └── vite.config.ts
-├── docker-compose.yml           # Production compose
-├── Dockerfile.backend
-├── Dockerfile.frontend
-├── nginx.conf
-├── README.md
-├── CHANGELOG.md
-├── CONTRIBUTING.md
-└── LICENSE
+cd frontend
+npm install
+npm run dev
 ```
 
 ---
 
-## Configuration
+## 🐳 Docker
 
-### Environment Variables
+### Development
 
-**Backend (.env or docker-compose environment):**
+```bash
+docker compose up -d
+```
+
+### Production
+
+```bash
+docker compose -f docker-compose.production.yml up -d
+```
+
+### Useful Commands
+
+```bash
+# View logs
+docker compose logs -f backend
+docker compose logs -f frontend
+
+# Rebuild specific service
+docker compose build --no-cache backend
+
+# Stop everything
+docker compose down
+
+# Remove volumes (WARNING: deletes data)
+docker compose down -v
+```
+
+### Services
+
+| Service    | Port  | Description                     |
+|------------|-------|---------------------------------|
+| Frontend   | 80    | React SPA via Nginx             |
+| Backend    | 8000  | FastAPI REST API                |
+| PostgreSQL | 5432  | Relational database             |
+| Ollama     | 11434 | Local LLM inference (optional)  |
+
+---
+
+## ⚙️ Environment Variables
+
+### Backend (`backend/.env`)
 
 ```env
-# Application
 APP_NAME=DocMind
-APP_VERSION=0.1.0
-APP_ENV=production              # development, testing, production
-DEBUG=false
+APP_VERSION=1.0.0
+APP_ENV=development
 
-# Database
-DATABASE_URL=postgresql+psycopg2://postgres:postgres@postgres:5432/docmind
+DATABASE_URL=postgresql+psycopg2://postgres:postgres@localhost:5432/docmind
 
-# Authentication
 JWT_SECRET=your-super-secret-key-min-32-chars
 JWT_ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=15
 REFRESH_TOKEN_EXPIRE_DAYS=7
 
-# Storage
-UPLOAD_DIR=/app/storage/uploads
-MAX_UPLOAD_SIZE_MB=50
-STORAGE_PATH=/app/storage
-VECTORSTORE_PATH=/app/storage/vectorstore
-
-# LLM Services
 OPENAI_API_KEY=sk-...              # Optional: for OpenAI models
-OLLAMA_HOST=http://ollama:11434    # Local LLM
-OLLAMA_MODEL=llama2
+OLLAMA_HOST=http://ollama:11434    # Local LLM endpoint
+OLLAMA_MODEL=llama3.2
 
-# Embeddings & OCR
-EMBEDDING_MODEL=bge-small          # bge-small|bge-base|bge-large|all-minilm
-OCR_LANGUAGE=en                    # en, zh, etc.
-
-# Logging
+EMBEDDING_MODEL=BAAI/bge-small-en-v1.5
+OCR_LANGUAGE=en
+MAX_UPLOAD_SIZE_MB=50
 LOG_LEVEL=INFO
 ```
 
-**Frontend (.env):**
+### Frontend (`frontend/.env`)
 
 ```env
 VITE_API_BASE_URL=http://localhost:8000
@@ -306,248 +401,219 @@ VITE_API_BASE_URL=http://localhost:8000
 
 ---
 
-## Features
+## 📚 API Documentation
 
-### ✨ Implemented
+Interactive API documentation is available at `http://localhost:8000/docs` (Swagger UI) and `http://localhost:8000/redoc` (ReDoc).
 
-- [x] JWT authentication with access/refresh tokens
-- [x] User registration and login
-- [x] PDF upload with validation
-- [x] PaddleOCR text extraction (multi-language)
-- [x] Automatic text cleaning
-- [x] Semantic text chunking
-- [x] Embeddings generation (SentenceTransformers)
-- [x] FAISS vector indexing
-- [x] Document similarity search
-- [x] Chat with streaming responses
-- [x] Chat history persistence
-- [x] Ollama local LLM support
-- [x] OpenAI GPT integration (fallback)
-- [x] Role-based access control (RBAC)
-- [x] Soft-delete for data retention
-- [x] Comprehensive error handling
-- [x] Request logging & audit trails
-- [x] Health/readiness endpoints
-- [x] Docker production setup
-- [x] PostgreSQL with migrations
-
-### 🚀 Future Enhancements
-
-- [ ] Advanced RAG with reranking
-- [ ] Web search integration
-- [ ] Multi-language translation
-- [ ] Document summarization
-- [ ] Custom model fine-tuning
-- [ ] Rate limiting & quotas
-- [ ] Admin dashboard
-- [ ] Export to multiple formats
-- [ ] Webhook integrations
-- [ ] API key management
-
----
-
-## Development
-
-### Running Tests
+### Authentication Endpoints
 
 ```bash
-cd backend
-pytest tests/
-pytest --cov=app tests/      # With coverage
+# Register a new user
+POST /api/v1/auth/register
+# Body: { "name": "John Doe", "email": "john@example.com", "password": "SecurePass123" }
+
+# Login
+POST /api/v1/auth/login
+# Body: { "email": "john@example.com", "password": "SecurePass123" }
+# Response: { "access_token": "...", "refresh_token": "...", "token_type": "bearer" }
+
+# Refresh token
+POST /api/v1/auth/refresh
+# Body: { "refresh_token": "..." }
+
+# Get current user
+GET /api/v1/auth/me
+# Header: Authorization: Bearer <access_token>
 ```
 
-### Code Quality
+### Document Endpoints
 
 ```bash
-# Linting
-cd backend
-pylint app/
-black --check app/
-mypy app/
+# Upload document
+POST /api/v1/documents/upload
+# Header: Authorization: Bearer <token>
+# Body: multipart/form-data (file: PDF)
 
-cd ../frontend
-npm run lint
-npm run type-check
+# List user documents
+GET /api/v1/documents
+# Header: Authorization: Bearer <token>
+
+# Get document details
+GET /api/v1/documents/{document_id}
+# Header: Authorization: Bearer <token>
+
+# Delete document
+DELETE /api/v1/documents/{document_id}
+# Header: Authorization: Bearer <token>
 ```
 
-### Database Migrations
+### Chat Endpoints
 
 ```bash
-cd backend
+# Chat with document
+POST /api/v1/chat
+# Header: Authorization: Bearer <token>
+# Body: { "document_id": "uuid", "question": "What is this document about?" }
 
-# Create migration
-alembic revision --autogenerate -m "Add new column"
+# Stream chat response (SSE)
+POST /api/v1/chat/stream
+# Header: Authorization: Bearer <token>
+# Body: { "document_id": "uuid", "question": "..." }
 
-# Apply migrations
-alembic upgrade head
+# Get chat history
+GET /api/v1/chat/history/{document_id}
+# Header: Authorization: Bearer <token>
+```
 
-# Revert last migration
-alembic downgrade -1
+### Health Endpoints
+
+```bash
+# Health check (no auth required)
+GET /api/v1/health
+
+# Readiness probe
+GET /api/v1/ready
 ```
 
 ---
 
-## Deployment
+## 📁 Project Structure
 
-### Production Checklist
-
-- [ ] Set strong `JWT_SECRET` (min 32 chars)
-- [ ] Configure `DATABASE_URL` for production PostgreSQL
-- [ ] Set `APP_ENV=production`
-- [ ] Disable `DEBUG=false`
-- [ ] Configure `OPENAI_API_KEY` for production LLM
-- [ ] Set up HTTPS/TLS
-- [ ] Configure reverse proxy (Nginx)
-- [ ] Setup database backups
-- [ ] Monitor logs and metrics
-- [ ] Configure resource limits
-
-### Docker Deployment
-
-```bash
-# Build images
-docker compose build
-
-# Start services
-docker compose up -d
-
-# View logs
-docker compose logs -f backend
-docker compose logs -f frontend
-
-# Stop services
-docker compose down
 ```
-
-### Kubernetes (Future)
-
-KubernetesYAML manifests available in `k8s/` directory (coming soon).
-
----
-
-## Performance
-
-### Benchmarks
-
-| Operation | Latency | Notes |
-|-----------|---------|-------|
-| Text extraction (10-page PDF) | ~5-10s | PaddleOCR |
-| Embedding generation (1000 chunks) | ~2-3s | SentenceTransformers |
-| Vector search (k=5) | <100ms | FAISS on CPU |
-| Chat response (streaming) | ~1-5s | Ollama/OpenAI |
-
-### Optimization Tips
-
-- Use GPU for embeddings: `DEVICE=cuda` (requires CUDA)
-- Increase `EMBEDDING_BATCH_SIZE` for throughput
-- Use `bge-base` or `bge-large` for better quality
-- Cache embeddings with `EmbeddingMetadata`
-- Enable FAISS GPU with `faiss-gpu` package
-
----
-
-## Troubleshooting
-
-### Backend won't start: "libGL.so.1 not found"
-
-**Solution:** Dockerfile now uses `opencv-python-headless` instead of `opencv-python`.
-
-```bash
-# Rebuild
-docker compose build --no-cache backend
-docker compose up
-```
-
-### Vector store not persisting
-
-Ensure `/app/storage/vectorstore` volume is mounted and writable.
-
-```bash
-docker compose exec backend ls -la /app/storage/
-```
-
-### Chat responses empty or timeout
-
-Check Ollama/LLM service health:
-
-```bash
-# If using Ollama
-docker compose logs ollama
-curl http://localhost:11434/api/tags
-```
-
-### Database migrations fail
-
-```bash
-# Check migration status
-docker compose exec backend alembic current
-
-# View migration history
-docker compose exec backend alembic history
-
-# Manual rollback
-docker compose exec backend alembic downgrade base
-docker compose exec backend alembic upgrade head
+DocMind/
+├── backend/
+│   ├── app/
+│   │   ├── api/v1/          # API routes, schemas, dependencies
+│   │   │   ├── routes/      # auth, chat, documents, health
+│   │   │   └── schemas/     # Pydantic request/response models
+│   │   ├── auth/            # JWT, password hashing, dependencies
+│   │   ├── core/            # Configuration, constants, logging
+│   │   ├── database/        # Engine, session, base models
+│   │   ├── middleware/      # CORS, exception handling, logging
+│   │   ├── models/          # SQLAlchemy ORM models
+│   │   ├── repositories/    # Data access layer
+│   │   ├── schemas/         # Shared Pydantic schemas
+│   │   └── services/        # Business logic services
+│   │       ├── ocr/         # OCR pipeline services
+│   │       ├── llm/         # LLM provider abstractions
+│   │       ├── rag/         # RAG orchestration
+│   │       └── vectorstore/ # FAISS management
+│   ├── alembic/             # Database migrations
+│   ├── tests/               # Test suite
+│   ├── requirements.txt     # Python dependencies
+│   └── startup.sh           # Docker entrypoint
+├── frontend/
+│   ├── src/
+│   │   ├── app/             # App bootstrap
+│   │   ├── components/      # UI components (Radix, layout)
+│   │   ├── contexts/        # React contexts (auth)
+│   │   ├── features/        # Feature modules
+│   │   ├── pages/           # Route pages
+│   │   ├── routes/          # Router configuration
+│   │   ├── services/        # API client (axios)
+│   │   ├── styles/          # Global styles (Tailwind)
+│   │   ├── types/           # TypeScript type definitions
+│   │   └── utils/           # Utility functions
+│   ├── package.json
+│   └── vite.config.ts
+├── docker-compose.yml       # Development orchestration
+├── docker-compose.production.yml
+├── Dockerfile.backend        # Multi-stage backend build
+├── Dockerfile.frontend       # Multi-stage frontend build
+├── nginx.conf                # Reverse proxy configuration
+├── docs/                     # Project documentation
+│   ├── API.md, Architecture.md, Database.md
+│   ├── PRD.md, SRS.md, BRD.md
+│   └── DECISIONS.md, Testing.md, Deployment.md
+├── assets/screenshots/       # Application screenshots
+├── .github/                  # CI/CD, issue templates
+│   ├── workflows/ci.yml
+│   └── ISSUE_TEMPLATE/
+├── ARCHITECTURE.md           # Detailed architecture docs
+├── CHANGELOG.md              # Release history
+├── CONTRIBUTING.md           # Contribution guide
+├── ROADMAP.md                # Development roadmap
+├── SECURITY.md               # Security policy
+├── CODE_OF_CONDUCT.md        # Community guidelines
+├── LICENSE                   # MIT license
+└── README.md                 # This file
 ```
 
 ---
 
-## Security
+## 📊 Project Statistics
 
-### Authentication & Authorization
-
-- JWT tokens with 15-minute expiration
-- Refresh tokens with 7-day expiration
-- Password hashing with Argon2
-- Role-based access control (RBAC)
-- Secure password validation
-
-### Data Protection
-
-- Soft-delete for audit trail
-- Checksum verification for uploads
-- CORS configured for frontend domain
-- SQL injection protection via ORM
-- XSS protection in React
-
-### Best Practices
-
-1. Always use HTTPS in production
-2. Rotate JWT secrets periodically
-3. Enable database backups
-4. Monitor for suspicious activity
-5. Keep dependencies updated
-6. Implement rate limiting
-7. Use strong passwords
+| Metric | Value |
+|--------|-------|
+| ⏱️ Setup Time | ~5 minutes (Docker) |
+| 📝 Language | Python 3.12, TypeScript 5.7 |
+| 📦 Dependencies | 25+ Python packages, 15+ npm packages |
+| 🐳 Docker Images | 3 services + optional Ollama |
+| 🗄️ Database | PostgreSQL 16 with 6 tables |
+| 📄 Documentation | 15+ markdown files |
 
 ---
 
-## License
+## 🗺️ Roadmap
 
-MIT License - see [LICENSE](LICENSE) for details.
+### Version 1.0 (Current) ✅
+Core OCR, RAG, chat, authentication, Docker deployment
 
----
+### Version 1.1 (Upcoming) 🚧
+Advanced RAG reranking, document summarization, test coverage, pre-commit hooks
 
-## Contributing
+### Version 1.2 (Planned) 📋
+Web search, multi-document chat, Redis caching, Celery workers, metrics
 
-Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+### Version 2.0 (Future) 💡
+Multi-tenant, SSO, Kubernetes, admin dashboard, plugins
 
----
-
-## Support
-
-- 📖 [Full Documentation](ARCHITECTURE.md)
-- 🐛 [Issue Tracker](https://github.com/SwastikPandey1024/DocMind/issues)
-- 💬 [Discussions](https://github.com/SwastikPandey1024/DocMind/discussions)
+See [ROADMAP.md](ROADMAP.md) for full details.
 
 ---
 
-## Author
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md) for details.
+
+**Quick steps:**
+1. Fork the repository
+2. Create a feature branch (`feature/amazing-feature`)
+3. Commit your changes (`feat: add amazing feature`)
+4. Push to your branch
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** — see [LICENSE](LICENSE) for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- [FastAPI](https://fastapi.tiangolo.com/) for the incredible Python web framework
+- [PaddleOCR](https://github.com/PaddlePaddle/PaddleOCR) for OCR capabilities
+- [FAISS](https://github.com/facebookresearch/faiss) by Meta for vector search
+- [SentenceTransformers](https://www.sbert.net/) for embedding models
+- [Ollama](https://ollama.ai/) for local LLM inference
+- All open-source contributors whose libraries made this possible
+
+---
+
+## 👤 Author
 
 **Swastik Pandey**
+
 - GitHub: [@SwastikPandey1024](https://github.com/SwastikPandey1024)
 - LinkedIn: [swastik-pandey-a02719297](https://www.linkedin.com/in/swastik-pandey-a02719297)
 
 ---
 
-**Built with ❤️ for intelligent document understanding**
+<div align="center">
+  <strong>Built with ❤️ for intelligent document understanding</strong>
+  <br />
+  <sub>If you find this project useful, consider giving it a ⭐!</sub>
+</div>
+
