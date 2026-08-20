@@ -13,7 +13,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>('dark');
 
   useEffect(() => {
-    const stored = window.localStorage.getItem('docmind-theme') as Theme | null;
+    const stored = window.localStorage.getItem('docuchat-theme') as Theme | null;
     if (stored === 'light' || stored === 'dark') {
       setTheme(stored);
       document.documentElement.classList.toggle('dark', stored === 'dark');
@@ -32,7 +32,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         const nextTheme = theme === 'dark' ? 'light' : 'dark';
         setTheme(nextTheme);
         document.documentElement.classList.toggle('dark', nextTheme === 'dark');
-        window.localStorage.setItem('docmind-theme', nextTheme);
+        window.localStorage.setItem('docuchat-theme', nextTheme);
       },
     }),
     [theme]

@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Create a report to help us improve DocMind
+about: Create a report to help us improve DocuChat
 title: "[BUG] "
 labels: bug
 assignees: ''
@@ -33,7 +33,7 @@ If applicable, add screenshots to help explain your problem.
 - **Python Version:** [e.g. 3.12]
 - **Node Version:** [e.g. 20]
 - **Docker Version:** [e.g. 24.0.7]
-- **DocMind Version:** [e.g. v1.0.0]
+- **DocuChat Version:** [e.g. v1.0.0]
 
 ## Backend Logs
 

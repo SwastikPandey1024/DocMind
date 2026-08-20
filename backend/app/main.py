@@ -27,7 +27,7 @@ setup_logging()
 async def lifespan(app: FastAPI):
     """Application startup and shutdown lifecycle."""
     # Startup
-    logger.info(f"Starting DocMind Backend (env={settings.environment})")
+    logger.info(f"Starting DocuChat Backend (env={settings.environment})")
 
     # Validate startup configuration (ONLY database is fatal)
     try:
@@ -58,7 +58,7 @@ async def lifespan(app: FastAPI):
     yield
 
     # Shutdown
-    logger.info("Shutting down DocMind Backend")
+    logger.info("Shutting down DocuChat Backend")
     try:
         engine.dispose()
     except Exception:
@@ -99,13 +99,13 @@ app.include_router(chat_router, prefix="/api/v1", tags=["chat"])
 @app.get("/health", response_model=HealthResponse, tags=["health"])
 async def health_check() -> HealthResponse:
     """Health check endpoint for load balancers."""
-    return HealthResponse(status="healthy", service="DocMind Backend")
+    return HealthResponse(status="healthy", service="DocuChat Backend")
 
 
 @app.get("/", tags=["root"])
 async def read_root() -> dict[str, str]:
     """Root endpoint."""
-    return {"message": "DocMind API is running", "version": settings.app_version}
+    return {"message": "DocuChat API is running", "version": settings.app_version}
 
 
 def custom_openapi():

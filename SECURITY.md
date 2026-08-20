@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-The following versions of DocMind are currently supported with security updates:
+The following versions of DocuChat are currently supported with security updates:
 
 | Version | Supported          |
 |---------|--------------------|
@@ -15,7 +15,7 @@ We recommend all users run the latest stable version to benefit from security pa
 
 ## Reporting a Vulnerability
 
-We take the security of DocMind seriously. If you discover a security vulnerability, please follow our responsible disclosure process.
+We take the security of DocuChat seriously. If you discover a security vulnerability, please follow our responsible disclosure process.
 
 ### How to Report
 
@@ -129,5 +129,5 @@ docker compose run --read-only backend
 
 ---
 
-We appreciate the community's help in keeping DocMind secure. Thank you for acting responsibly.
+We appreciate the community's help in keeping DocuChat secure. Thank you for acting responsibly.
 

@@ -1,4 +1,4 @@
-# DocMind Deployment Guide
+# DocuChat Deployment Guide
 
 ## Development Setup
 
@@ -35,7 +35,7 @@ npm run dev  # Starts on http://localhost:5173
 **PostgreSQL:**
 ```bash
 docker run -d \
-  -e POSTGRES_DB=docmind \
+  -e POSTGRES_DB=docuchat \
   -e POSTGRES_USER=postgres \
   -e POSTGRES_PASSWORD=postgres \
   -p 5432:5432 \
@@ -49,7 +49,7 @@ docker run -d \
 ### Build
 
 ```bash
-cd DocMind
+cd DocuChat
 docker compose build
 ```
 
@@ -127,12 +127,12 @@ curl http://localhost:11434/api/tags
 
 **Backend (.env or secrets):**
 ```env
-APP_NAME=DocMind
+APP_NAME=DocuChat
 APP_VERSION=0.1.0
 APP_ENV=production
 DEBUG=false
 
-DATABASE_URL=postgresql+psycopg2://user:password@prod-db.example.com:5432/docmind
+DATABASE_URL=postgresql+psycopg2://user:password@prod-db.example.com:5432/docuchat
 
 JWT_SECRET=your-super-secret-key-min-32-chars-change-this
 JWT_ALGORITHM=HS256
@@ -160,16 +160,16 @@ version: '3.8'
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: docmind-postgres
+    container_name: docuchat-postgres
     restart: always
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-docmind}
+      POSTGRES_DB: ${POSTGRES_DB:-docuchat}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - docmind
+      - docuchat
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -188,7 +188,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.backend
-    container_name: docmind-backend
+    container_name: docuchat-backend
     restart: always
     environment:
       APP_ENV: production
@@ -202,7 +202,7 @@ services:
       - ./storage/logs:/app/storage/logs
       - ./storage/vectorstore:/app/storage/vectorstore
     networks:
-      - docmind
+      - docuchat
     depends_on:
       postgres:
         condition: service_healthy
@@ -225,12 +225,12 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.frontend
-    container_name: docmind-frontend
+    container_name: docuchat-frontend
     restart: always
     environment:
-      VITE_API_BASE_URL: https://api.docmind.example.com
+      VITE_API_BASE_URL: https://api.docuchat.example.com
     networks:
-      - docmind
+      - docuchat
     depends_on:
       - backend
     deploy:
@@ -244,12 +244,12 @@ services:
 
   ollama:
     image: ollama/ollama:latest
-    container_name: docmind-ollama
+    container_name: docuchat-ollama
     restart: always
     volumes:
       - ollama_data:/root/.ollama
     networks:
-      - docmind
+      - docuchat
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
       interval: 30s
@@ -269,7 +269,7 @@ volumes:
   ollama_data:
 
 networks:
-  docmind:
+  docuchat:
     driver: bridge
 ```
 
@@ -333,15 +333,15 @@ docker run -it --rm --name certbot \
   -v "/etc/letsencrypt:/etc/letsencrypt" \
   -v "/var/lib/letsencrypt:/var/lib/letsencrypt" \
   certbot/certbot certonly --standalone \
-  -d docmind.example.com
+  -d docuchat.example.com
 
 # Update nginx.conf
 server {
     listen 443 ssl http2;
-    server_name docmind.example.com;
+    server_name docuchat.example.com;
     
-    ssl_certificate /etc/letsencrypt/live/docmind.example.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/docmind.example.com/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/docuchat.example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/docuchat.example.com/privkey.pem;
     
     # Include remaining config...
 }
@@ -349,7 +349,7 @@ server {
 # Redirect HTTP to HTTPS
 server {
     listen 80;
-    server_name docmind.example.com;
+    server_name docuchat.example.com;
     return 301 https://$server_name$request_uri;
 }
 ```
@@ -360,7 +360,7 @@ server {
 
 **Namespace:**
 ```bash
-kubectl create namespace docmind
+kubectl create namespace docuchat
 ```
 
 **Database:**
@@ -398,24 +398,24 @@ kubectl apply -f k8s/grafana.yaml
 **PostgreSQL Dump:**
 ```bash
 # Full backup
-docker compose exec postgres pg_dump -U postgres docmind > backup_$(date +%Y%m%d).sql
+docker compose exec postgres pg_dump -U postgres docuchat > backup_$(date +%Y%m%d).sql
 
 # Compressed backup
-docker compose exec postgres pg_dump -U postgres docmind | gzip > backup_$(date +%Y%m%d).sql.gz
+docker compose exec postgres pg_dump -U postgres docuchat | gzip > backup_$(date +%Y%m%d).sql.gz
 
 # Automated daily backup
-0 2 * * * /usr/local/bin/backup-docmind.sh >> /var/log/docmind-backup.log 2>&1
+0 2 * * * /usr/local/bin/backup-docuchat.sh >> /var/log/docuchat-backup.log 2>&1
 ```
 
-**Backup Script (`/usr/local/bin/backup-docmind.sh`):**
+**Backup Script (`/usr/local/bin/backup-docuchat.sh`):**
 ```bash
 #!/bin/bash
-BACKUP_DIR="/backups/docmind"
+BACKUP_DIR="/backups/docuchat"
 DATE=$(date +%Y%m%d_%H%M%S)
 mkdir -p $BACKUP_DIR
 
-docker compose exec -T postgres pg_dump -U postgres docmind | \
-  gzip > $BACKUP_DIR/docmind_$DATE.sql.gz
+docker compose exec -T postgres pg_dump -U postgres docuchat | \
+  gzip > $BACKUP_DIR/docuchat_$DATE.sql.gz
 
 # Keep only last 7 days
 find $BACKUP_DIR -name "*.gz" -mtime +7 -delete
@@ -425,11 +425,11 @@ find $BACKUP_DIR -name "*.gz" -mtime +7 -delete
 
 ```bash
 # Restore from backup
-gunzip < backup_20240717.sql.gz | docker compose exec -T postgres psql -U postgres -d docmind
+gunzip < backup_20240717.sql.gz | docker compose exec -T postgres psql -U postgres -d docuchat
 
 # Or restore to new database
-docker compose exec postgres createdb -U postgres docmind_restored
-gunzip < backup_20240717.sql.gz | docker compose exec -T postgres psql -U postgres -d docmind_restored
+docker compose exec postgres createdb -U postgres docuchat_restored
+gunzip < backup_20240717.sql.gz | docker compose exec -T postgres psql -U postgres -d docuchat_restored
 ```
 
 ### Database Migrations
@@ -471,9 +471,9 @@ docker compose logs -f
 
 ### Log Rotation
 
-**Logrotate config (`/etc/logrotate.d/docmind`):**
+**Logrotate config (`/etc/logrotate.d/docuchat`):**
 ```
-/var/log/docmind/*.log {
+/var/log/docuchat/*.log {
     daily
     rotate 7
     compress
@@ -494,7 +494,7 @@ docker compose logs -f
 docker stats
 
 # Specific service
-docker stats docmind-backend
+docker stats docuchat-backend
 
 # Database connections
 docker compose exec postgres psql -U postgres -c "SELECT datname, count(*) FROM pg_stat_activity GROUP BY datname;"
@@ -617,7 +617,7 @@ SQLALCHEMY_MAX_OVERFLOW=40
 ```bash
 # Monitor memory growth
 while true; do
-  docker stats --no-stream docmind-backend
+  docker stats --no-stream docuchat-backend
   sleep 60
 done
 
@@ -700,7 +700,7 @@ jobs:
           echo "${{ secrets.DEPLOY_KEY }}" > deploy_key
           chmod 600 deploy_key
           ssh -i deploy_key ubuntu@$SERVER_IP \
-            'cd /app/docmind && git pull && docker compose up -d'
+            'cd /app/docuchat && git pull && docker compose up -d'
 ```
 
 ---
@@ -725,11 +725,11 @@ jobs:
 # 1. Provision new server/cluster
 # 2. Install Docker & Docker Compose
 # 3. Clone repository
-git clone https://github.com/SwastikPandey1024/DocMind.git
-cd DocMind
+git clone https://github.com/SwastikPandey1024/DocuChat.git
+cd DocuChat
 
 # 4. Restore database
-gunzip < backup_20240717.sql.gz | docker compose exec -T postgres psql -U postgres -d docmind
+gunzip < backup_20240717.sql.gz | docker compose exec -T postgres psql -U postgres -d docuchat
 
 # 5. Start services
 docker compose up -d

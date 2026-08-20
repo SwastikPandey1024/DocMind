@@ -1,8 +1,8 @@
-# DocMind Architecture & Design
+# DocuChat Architecture & Design
 
 ## System Overview
 
-DocMind is a distributed AI application with clear separation of concerns:
+DocuChat is a distributed AI application with clear separation of concerns:
 
 ```
 ┌──────────────────┐
@@ -383,7 +383,7 @@ Chunk (N) ──→ (1) EmbeddingMetadata
 - `./storage/vectorstore` - FAISS indices
 
 **Networks:**
-- `docmind` (bridge) - Internal communication
+- `docuchat` (bridge) - Internal communication
 
 ### Port Mappings
 

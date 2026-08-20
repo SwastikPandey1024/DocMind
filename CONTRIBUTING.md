@@ -1,6 +1,6 @@
-# Contributing to DocMind
+# Contributing to DocuChat
 
-Thank you for your interest in contributing to **DocMind** — the AI-powered OCR + RAG Document Chat System. We welcome contributions from everyone, whether it's a bug fix, feature enhancement, documentation improvement, or any other form of contribution.
+Thank you for your interest in contributing to **DocuChat** — the AI-powered OCR + RAG Document Chat System. We welcome contributions from everyone, whether it's a bug fix, feature enhancement, documentation improvement, or any other form of contribution.
 
 ## Table of Contents
 
@@ -45,14 +45,14 @@ Make sure you have the following installed:
 1. **Fork the repository** and clone your fork:
 
    ```bash
-   git clone https://github.com/your-username/DocMind.git
-   cd DocMind
+   git clone https://github.com/your-username/DocuChat.git
+   cd DocuChat
    ```
 
 2. **Add the upstream remote:**
 
    ```bash
-   git remote add upstream https://github.com/SwastikPandey1024/DocMind.git
+   git remote add upstream https://github.com/SwastikPandey1024/DocuChat.git
    ```
 
 3. **Set up the backend:**
@@ -287,10 +287,10 @@ Use the [Feature Request template](.github/ISSUE_TEMPLATE/feature_request.md).
 
 If you have questions, feel free to:
 
-- Open a [Discussion](https://github.com/SwastikPandey1024/DocMind/discussions)
+- Open a [Discussion](https://github.com/SwastikPandey1024/DocuChat/discussions)
 - Check the [Documentation](ARCHITECTURE.md)
 
 ---
 
-**Thank you for contributing to DocMind! 🚀**
+**Thank you for contributing to DocuChat! 🚀**
 

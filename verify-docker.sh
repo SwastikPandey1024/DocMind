@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Docker startup and verification script for DocMind
+# Docker startup and verification script for DocuChat
 
 set -e
 
 echo "════════════════════════════════════════════════════════════"
-echo "  DocMind Docker Deployment Verification"
+echo "  DocuChat Docker Deployment Verification"
 echo "════════════════════════════════════════════════════════════"
 
 # Colors
@@ -139,7 +139,7 @@ fi
 
 echo ""
 echo "════════════════════════════════════════════════════════════"
-echo -e "${GREEN}✓ DocMind is running!${NC}"
+echo -e "${GREEN}✓ DocuChat is running!${NC}"
 echo "════════════════════════════════════════════════════════════"
 echo ""
 echo "Access URLs:"
@@ -150,7 +150,7 @@ echo ""
 echo "Database credentials:"
 echo "  Host: localhost"
 echo "  Port: 5432"
-echo "  Database: docmind"
+echo "  Database: docuchat"
 echo "  User: postgres"
 echo ""
 echo "View logs:"

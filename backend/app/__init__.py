@@ -1,1 +1,1 @@
-"""DocMind Backend Application."""
+"""DocuChat Backend Application."""

@@ -1,6 +1,6 @@
 ---
 name: Feature request
-about: Suggest an idea for DocMind
+about: Suggest an idea for DocuChat
 title: "[FEATURE] "
 labels: enhancement
 assignees: ''

@@ -7,7 +7,7 @@ class ReadinessResponse(BaseModel):
     """Readiness/degraded status response."""
 
     status: str  # healthy|degraded
-    service: str  # DocMind Backend
+    service: str  # DocuChat Backend
 
     database: str  # healthy|unavailable
     storage: str  # healthy|unavailable

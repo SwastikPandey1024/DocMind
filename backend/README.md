@@ -33,5 +33,5 @@ python -m alembic upgrade head
 The default local database URL is:
 
 ```env
-DATABASE_URL=postgresql+psycopg2://postgres:postgres@localhost:5432/docmind
+DATABASE_URL=postgresql+psycopg2://postgres:postgres@localhost:5432/docuchat
 ```

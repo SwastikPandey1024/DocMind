@@ -1,7 +1,7 @@
 # System Architecture
 
 ## Project
-DocMind AI - Intelligent OCR Document Chat System
+DocuChat AI - Intelligent OCR Document Chat System
 
 ## Version
 | Version | Date | Author |
@@ -9,7 +9,7 @@ DocMind AI - Intelligent OCR Document Chat System
 | 1.0 | July 2026 | Swastik Pandey |
 
 ## 1. Architecture Overview
-DocMind AI follows a modular, service-oriented architecture to separate responsibilities across presentation, business logic, AI processing, data storage, and external services. This design enables scalability, maintainability, and future extensibility.
+DocuChat AI follows a modular, service-oriented architecture to separate responsibilities across presentation, business logic, AI processing, data storage, and external services. This design enables scalability, maintainability, and future extensibility.
 
 ## 2. High-Level Architecture
 ```text

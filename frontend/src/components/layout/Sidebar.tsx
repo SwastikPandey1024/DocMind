@@ -12,7 +12,7 @@ export function Sidebar() {
   return (
     <aside className="hidden w-72 border-r border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900 lg:flex lg:flex-col">
       <div className="mb-8">
-        <p className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">DocMind</p>
+        <p className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">DocuChat</p>
         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">AI workspace</p>
       </div>
 

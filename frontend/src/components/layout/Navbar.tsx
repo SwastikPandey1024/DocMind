@@ -12,7 +12,7 @@ export function Navbar() {
             <Search className="h-4 w-4" />
           </div>
           <div>
-            <p className="text-sm font-semibold">DocMind workspace</p>
+            <p className="text-sm font-semibold">DocuChat workspace</p>
             <p className="text-xs text-slate-500 dark:text-slate-400">Knowledge assistant</p>
           </div>
         </div>

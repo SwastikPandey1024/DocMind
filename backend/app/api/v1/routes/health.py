@@ -30,7 +30,7 @@ async def health_check(db: Session = Depends(get_db_session)) -> HealthResponse:
         
         return HealthResponse(
             status="healthy",
-            service="DocMind Backend",
+            service="DocuChat Backend",
             timestamp=datetime.utcnow().isoformat(),
         )
         
@@ -38,7 +38,7 @@ async def health_check(db: Session = Depends(get_db_session)) -> HealthResponse:
         logger.error(f"Health check failed: {e}")
         return HealthResponse(
             status="degraded",
-            service="DocMind Backend",
+            service="DocuChat Backend",
             timestamp=datetime.utcnow().isoformat(),
             error=str(e),
         )

@@ -1,7 +1,7 @@
 # Software Requirements Specification (SRS)
 
 ## Project
-DocMind AI - OCR Powered Intelligent Document Chat System
+DocuChat AI - OCR Powered Intelligent Document Chat System
 
 ## Version
 | Version | Date | Author |

@@ -26,7 +26,7 @@
 
 ## ADR-004
 
-**Decision:** Use SQLAlchemy 2.x ORM models with Alembic migrations for the DocMind database layer.
+**Decision:** Use SQLAlchemy 2.x ORM models with Alembic migrations for the DocuChat database layer.
 
 **Reason:** SQLAlchemy 2.x provides typed ORM models and mature PostgreSQL support, while Alembic gives repeatable schema migrations instead of manual table creation.
 

@@ -8,7 +8,7 @@ from app.core.constants import Environment
 
 
 class Settings(BaseSettings):
-    app_name: str = Field(default="DocMind", validation_alias="APP_NAME")
+    app_name: str = Field(default="DocuChat", validation_alias="APP_NAME")
     app_version: str = Field(default="0.1.0", validation_alias="APP_VERSION")
     environment: Literal["development", "testing", "production"] = Field(
         default=Environment.DEVELOPMENT,
@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     )
     debug: bool = Field(default=False, validation_alias="DEBUG")
     database_url: str = Field(
-        default="postgresql+psycopg2://postgres:postgres@postgres:5432/docmind",
+        default="postgresql+psycopg2://postgres:postgres@postgres:5432/docuchat",
         validation_alias="DATABASE_URL"
     )
     jwt_secret: str = Field(default="change-me-in-production", validation_alias="JWT_SECRET")

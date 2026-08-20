@@ -19,5 +19,5 @@ docker compose up -d postgres
 The backend expects:
 
 ```env
-DATABASE_URL=postgresql+psycopg2://postgres:postgres@localhost:5432/docmind
+DATABASE_URL=postgresql+psycopg2://postgres:postgres@localhost:5432/docuchat
 ```

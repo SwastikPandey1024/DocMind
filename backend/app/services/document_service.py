@@ -16,7 +16,7 @@ from app.services.document_validator import DocumentValidator
 from app.services.storage_service import StorageService
 from app.services.ocr_pipeline import start_ocr_processing
 
-logger = logging.getLogger("docmind")
+logger = logging.getLogger("docuchat")
 
 
 @dataclass(frozen=True)

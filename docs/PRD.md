@@ -1,7 +1,7 @@
 # Product Requirements Document (PRD)
 
 ## Project
-DocMind AI - Intelligent OCR Document Chat System
+DocuChat AI - Intelligent OCR Document Chat System
 
 ## Version
 | Version | Date | Author |

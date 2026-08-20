@@ -14,8 +14,8 @@ def setup_cors(app: FastAPI) -> None:
     # Parse allowed origins from environment or use defaults
     if settings.environment == "production":
         allowed_origins = [
-            "https://docmind.example.com",
-            "https://app.docmind.example.com",
+            "https://docuchat.example.com",
+            "https://app.docuchat.example.com",
         ]
     else:
         # Development: allow all localhost variants

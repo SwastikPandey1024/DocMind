@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# DocMind Deployment & Verification Script
+# DocuChat Deployment & Verification Script
 # Comprehensive pre-deployment checks and deployment automation
 
 set -e
@@ -185,7 +185,7 @@ verify_services() {
     fi
     
     # Check Database
-    if docker-compose exec -T postgres psql -U postgres -d docmind -c "SELECT 1" &> /dev/null; then
+    if docker-compose exec -T postgres psql -U postgres -d docuchat -c "SELECT 1" &> /dev/null; then
         log_success "Database health: OK"
     else
         log_error "Database health: FAILED"
@@ -214,7 +214,7 @@ show_access_info() {
     echo "  ReDoc:        ${BLUE}http://localhost:8000/redoc${NC}"
     echo ""
     echo -e "${GREEN}Default Credentials:${NC}"
-    echo "  Email:        admin@docmind.local"
+    echo "  Email:        admin@docuchat.local"
     echo "  Password:     Set via environment"
     echo ""
     echo -e "${GREEN}Useful Commands:${NC}"
@@ -227,7 +227,7 @@ show_access_info() {
 # Main menu
 show_menu() {
     echo ""
-    echo -e "${BLUE}DocMind Deployment Menu${NC}"
+    echo -e "${BLUE}DocuChat Deployment Menu${NC}"
     echo "1. Check prerequisites"
     echo "2. Check environment"
     echo "3. Check disk space"

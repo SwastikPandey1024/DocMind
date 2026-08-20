@@ -17,7 +17,7 @@ def setup_logging() -> logging.Logger:
         force=True,
     )
 
-    logger = logging.getLogger("docmind")
+    logger = logging.getLogger("docuchat")
     logger.setLevel(log_level)
 
     Path(settings.upload_dir).mkdir(parents=True, exist_ok=True)

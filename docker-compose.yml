@@ -1,10 +1,10 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: docmind-postgres
+    container_name: docuchat-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-docmind}
+      POSTGRES_DB: ${POSTGRES_DB:-docuchat}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
     ports:
@@ -12,9 +12,9 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - docmind
+      - docuchat
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-docmind}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-docuchat}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -24,14 +24,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.backend
-    container_name: docmind-backend
+    container_name: docuchat-backend
     restart: unless-stopped
     environment:
-      APP_NAME: ${APP_NAME:-DocMind}
+      APP_NAME: ${APP_NAME:-DocuChat}
       APP_VERSION: ${APP_VERSION:-0.1.0}
       APP_ENV: ${APP_ENV:-development}
       DEBUG: ${DEBUG:-false}
-      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-docmind}
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-docuchat}
       JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
       JWT_ALGORITHM: ${JWT_ALGORITHM:-HS256}
       ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-15}
@@ -51,7 +51,7 @@ services:
       - ./storage/logs:/app/storage/logs
       - ./backend:/app
     networks:
-      - docmind
+      - docuchat
     depends_on:
       postgres:
         condition: service_healthy
@@ -66,14 +66,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.frontend
-    container_name: docmind-frontend
+    container_name: docuchat-frontend
     restart: unless-stopped
     ports:
       - "80:80"
     environment:
       VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://backend:8000}
     networks:
-      - docmind
+      - docuchat
     depends_on:
       - backend
     healthcheck:
@@ -85,7 +85,7 @@ services:
 
   ollama:
     image: ollama/ollama:latest
-    container_name: docmind-ollama
+    container_name: docuchat-ollama
     restart: unless-stopped
     environment:
       OLLAMA_HOST: 0.0.0.0:11434
@@ -94,7 +94,7 @@ services:
     volumes:
       - ollama_data:/root/.ollama
     networks:
-      - docmind
+      - docuchat
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
       interval: 30s
@@ -107,5 +107,5 @@ volumes:
   ollama_data:
 
 networks:
-  docmind:
+  docuchat:
     driver: bridge

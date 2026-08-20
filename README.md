@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>🧠 DocMind</h1>
+  <h1>🧠 DocuChat</h1>
   <p><strong>AI-Powered OCR + RAG Document Chat System</strong></p>
 
   <p>
@@ -33,10 +33,10 @@
     <a href="CODE_OF_CONDUCT.md">
       <img src="https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg" alt="Code of Conduct">
     </a>
-    <a href="https://github.com/SwastikPandey1024/DocMind/issues">
+    <a href="https://github.com/SwastikPandey1024/DocuChat/issues">
       <img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg" alt="Contributions Welcome">
     </a>
-    <a href="https://github.com/SwastikPandey1024/DocMind/releases">
+    <a href="https://github.com/SwastikPandey1024/DocuChat/releases">
       <img src="https://img.shields.io/badge/release-v1.0.0-blue.svg" alt="Release">
     </a>
   </p>
@@ -62,7 +62,7 @@
 ## 🚀 Current Project Status (v1.0.0 Stable Release)
 
 ```text
-DocMind (OCR + RAG Document Chat)
+DocuChat (OCR + RAG Document Chat)
 │
 ├── OCR Extraction           ✅ (PaddleOCR multi-language text extraction)
 ├── RAG Vector Pipeline      ✅ (Chunking, HuggingFace embeddings & FAISS indexing)
@@ -81,9 +81,9 @@ DocMind (OCR + RAG Document Chat)
 
 ## 📖 Overview
 
-**DocMind** is a production-ready AI SaaS application that combines **Optical Character Recognition (OCR)**, **Retrieval-Augmented Generation (RAG)**, and **LLM-powered chat** to enable intelligent document understanding and Q&A.
+**DocuChat** is a production-ready AI SaaS application that combines **Optical Character Recognition (OCR)**, **Retrieval-Augmented Generation (RAG)**, and **LLM-powered chat** to enable intelligent document understanding and Q&A.
 
-Upload PDFs, extract text using OCR, index content with semantic embeddings, and have natural conversations with your documents. DocMind supports both **local LLMs (Ollama)** and **cloud LLMs (OpenAI)**.
+Upload PDFs, extract text using OCR, index content with semantic embeddings, and have natural conversations with your documents. DocuChat supports both **local LLMs (Ollama)** and **cloud LLMs (OpenAI)**.
 
 ---
 
@@ -300,8 +300,8 @@ Chat Response ← LLM Generation ← Context Building ← FAISS Search
 
 ```bash
 # Clone the repository
-git clone https://github.com/SwastikPandey1024/DocMind.git
-cd DocMind
+git clone https://github.com/SwastikPandey1024/DocuChat.git
+cd DocuChat
 
 # Build and start all services
 docker compose up -d
@@ -319,7 +319,7 @@ open http://localhost:8000/docs # API Documentation
 **1. Start PostgreSQL:**
 ```bash
 docker run -d \
-  -e POSTGRES_DB=docmind \
+  -e POSTGRES_DB=docuchat \
   -e POSTGRES_USER=postgres \
   -e POSTGRES_PASSWORD=postgres \
   -p 5432:5432 \
@@ -392,11 +392,11 @@ docker compose down -v
 ### Backend (`backend/.env`)
 
 ```env
-APP_NAME=DocMind
+APP_NAME=DocuChat
 APP_VERSION=1.0.0
 APP_ENV=development
 
-DATABASE_URL=postgresql+psycopg2://postgres:postgres@localhost:5432/docmind
+DATABASE_URL=postgresql+psycopg2://postgres:postgres@localhost:5432/docuchat
 
 JWT_SECRET=your-super-secret-key-min-32-chars
 JWT_ALGORITHM=HS256
@@ -500,7 +500,7 @@ GET /api/v1/ready
 ## 📁 Project Structure
 
 ```
-DocMind/
+DocuChat/
 ├── backend/
 │   ├── app/
 │   │   ├── api/v1/          # API routes, schemas, dependencies

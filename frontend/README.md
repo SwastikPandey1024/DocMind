@@ -1,6 +1,6 @@
-# DocMind Frontend
+# DocuChat Frontend
 
-This folder contains the production-oriented React frontend for DocMind.
+This folder contains the production-oriented React frontend for DocuChat.
 
 ## Structure
 - src/app: application shell and bootstrap

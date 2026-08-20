@@ -1,7 +1,7 @@
 # Business Requirements Document (BRD)
 
 ## Project Title
-DocMind AI - OCR Powered Intelligent Document Chat System
+DocuChat AI - OCR Powered Intelligent Document Chat System
 
 ## Version
 | Version | Date | Author |
@@ -9,7 +9,7 @@ DocMind AI - OCR Powered Intelligent Document Chat System
 | 1.0 | July 2026 | Swastik Pandey |
 
 ## 1. Executive Summary
-DocMind AI is an AI-powered document intelligence platform that enables users to upload scanned or digital PDF documents and interact with them using natural language. The system combines Optical Character Recognition (OCR), Retrieval-Augmented Generation (RAG), and Large Language Models (LLMs) to provide accurate answers based only on the uploaded documents. Instead of manually reading lengthy PDFs, users can ask questions and receive context-aware responses within seconds.
+DocuChat AI is an AI-powered document intelligence platform that enables users to upload scanned or digital PDF documents and interact with them using natural language. The system combines Optical Character Recognition (OCR), Retrieval-Augmented Generation (RAG), and Large Language Models (LLMs) to provide accurate answers based only on the uploaded documents. Instead of manually reading lengthy PDFs, users can ask questions and receive context-aware responses within seconds.
 
 ## 2. Business Problem
 Organizations frequently work with research papers, contracts, government documents, user manuals, policies, financial reports, and medical records. Finding specific information requires manually reading large documents. Current PDF readers only support keyword search and lack contextual understanding. This results in low productivity, time-consuming document analysis, human errors, and increased operational cost.

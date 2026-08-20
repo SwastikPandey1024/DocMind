@@ -100,7 +100,7 @@ export function SettingsPage() {
             {/* About */}
             <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
               <h2 className="mb-4 text-xl font-semibold text-gray-900 dark:text-white">
-                About DocMind
+                About DocuChat
               </h2>
               <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
                 <p>
@@ -111,7 +111,7 @@ export function SettingsPage() {
                   Document Chat
                 </p>
                 <p className="mt-4">
-                  DocMind enables you to upload PDFs and chat with them using advanced AI. Powered by
+                  DocuChat enables you to upload PDFs and chat with them using advanced AI. Powered by
                   RAG (Retrieval-Augmented Generation) technology.
                 </p>
               </div>

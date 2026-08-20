@@ -74,7 +74,7 @@ jobs:
       postgres:
         image: postgres:16-alpine
         env:
-          POSTGRES_DB: docmind_test
+          POSTGRES_DB: docuchat_test
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
         ports:
@@ -106,7 +106,7 @@ jobs:
             echo "No test files found — skipping test execution"
           fi
         env:
-          DATABASE_URL: postgresql+psycopg2://postgres:postgres@localhost:5432/docmind_test
+          DATABASE_URL: postgresql+psycopg2://postgres:postgres@localhost:5432/docuchat_test
           JWT_SECRET: test-secret-key-for-ci
 
   frontend-tests:

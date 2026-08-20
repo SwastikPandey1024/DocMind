@@ -2,7 +2,7 @@
 
 > *Last updated: July 2026*
 
-DocMind is under active development. This roadmap outlines planned features and improvements for upcoming releases. It is a living document and may change based on community feedback and project priorities.
+DocuChat is under active development. This roadmap outlines planned features and improvements for upcoming releases. It is a living document and may change based on community feedback and project priorities.
 
 ---
 

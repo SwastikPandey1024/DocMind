@@ -23,5 +23,5 @@ async def ready_check() -> HealthResponse:
     """
     return HealthResponse(
         status="healthy",
-        service="DocMind Backend",
+        service="DocuChat Backend",
     )

@@ -6,7 +6,7 @@ from collections.abc import Mapping
 
 from app.core.logging import setup_logging
 
-logger = logging.getLogger("docmind.auth")
+logger = logging.getLogger("docuchat.auth")
 
 
 def _ensure_base_logging() -> None:

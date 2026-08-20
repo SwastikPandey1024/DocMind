@@ -8,7 +8,7 @@ class HealthResponse(BaseModel):
     """Health check response."""
     
     status: str  # "healthy", "degraded", "unhealthy"
-    service: str  # "DocMind Backend"
+    service: str  # "DocuChat Backend"
     timestamp: Optional[str] = None  # ISO 8601 timestamp
     error: Optional[str] = None  # Error message if status != healthy
     
@@ -16,7 +16,7 @@ class HealthResponse(BaseModel):
         json_schema_extra = {
             "example": {
                 "status": "healthy",
-                "service": "DocMind Backend",
+                "service": "DocuChat Backend",
                 "timestamp": "2024-01-15T10:30:00.000000",
             }
         }

@@ -3,16 +3,16 @@ version: '3.8'
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: docmind-postgres-prod
+    container_name: docuchat-postgres-prod
     restart: always
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-docmind}
+      POSTGRES_DB: ${POSTGRES_DB:-docuchat}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD required}
     volumes:
       - postgres_data_prod:/var/lib/postgresql/data
     networks:
-      - docmind
+      - docuchat
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
       interval: 10s
@@ -20,12 +20,12 @@ services:
       retries: 5
 
   backend:
-    image: ${DOCKER_REGISTRY:-docker.io}/docmind-backend:${VERSION:-latest}
-    container_name: docmind-backend-prod
+    image: ${DOCKER_REGISTRY:-docker.io}/docuchat-backend:${VERSION:-latest}
+    container_name: docuchat-backend-prod
     restart: always
     environment:
       APP_ENV: production
-      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:?}@postgres:5432/${POSTGRES_DB:-docmind}
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:?}@postgres:5432/${POSTGRES_DB:-docuchat}
       JWT_SECRET: ${JWT_SECRET:?JWT_SECRET required}
       OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://ollama:11434}
       EMBEDDING_MODEL: ${EMBEDDING_MODEL:-bge-small}
@@ -35,7 +35,7 @@ services:
       - storage_vectorstore_prod:/app/storage/vectorstore
       - storage_logs_prod:/app/storage/logs
     networks:
-      - docmind
+      - docuchat
     depends_on:
       postgres:
         condition: service_healthy
@@ -46,13 +46,13 @@ services:
       retries: 3
 
   frontend:
-    image: ${DOCKER_REGISTRY:-docker.io}/docmind-frontend:${VERSION:-latest}
-    container_name: docmind-frontend-prod
+    image: ${DOCKER_REGISTRY:-docker.io}/docuchat-frontend:${VERSION:-latest}
+    container_name: docuchat-frontend-prod
     restart: always
     environment:
       VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8000}
     networks:
-      - docmind
+      - docuchat
     depends_on:
       - backend
     healthcheck:
@@ -63,14 +63,14 @@ services:
 
   ollama:
     image: ollama/ollama:latest
-    container_name: docmind-ollama-prod
+    container_name: docuchat-ollama-prod
     restart: always
     environment:
       OLLAMA_HOST: 0.0.0.0:11434
     volumes:
       - ollama_data_prod:/root/.ollama
     networks:
-      - docmind
+      - docuchat
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
       interval: 30s
@@ -85,5 +85,5 @@ volumes:
   storage_logs_prod:
 
 networks:
-  docmind:
+  docuchat:
     driver: bridge
